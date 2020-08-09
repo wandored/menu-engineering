@@ -88,7 +88,7 @@ df_pmix = df_MenuEng.reindex(columns=['Location', 'MenuItem', 'Qty', 'Price',
                                       'FoodCost', 'Sales', 'Cost', 'Margin', 'Cat1', 'Cat2', 'Cat3'])
 df_MenuEng = df_pmix
 for loc in cat1_list:
-    with pd.ExcelWriter(f'MenuEngineering{loc}.xlsx') as writer:  # pylint: disable=abstract-class-instantiated
+    with pd.ExcelWriter(f'MenuEngineering-{loc}.xlsx') as writer:  # pylint: disable=abstract-class-instantiated
         for cat in cat2_list:
             df = menucatagory(cat)
             sort_list = ['Star', 'Opportunity', 'Puzzle', 'Dog']
