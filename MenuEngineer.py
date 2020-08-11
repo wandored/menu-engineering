@@ -9,6 +9,7 @@ df_MenuEng = pd.DataFrame()
 
 
 def removedups(x):
+    # Turn the list into a dict then back to a list to remove duplicates
     return list(dict.fromkeys(x))
 
 
@@ -36,6 +37,7 @@ def rating(df):
 
 
 def menucatagory(catg):
+    # Create a separate dataframe for each menu category
     df = df_MenuEng.drop(df_MenuEng[df_MenuEng.Cat2 != catg].index)
     return df
 
@@ -56,6 +58,7 @@ df_product.drop(columns={'Textbox3', 'Textbox27', 'TransferDate',
 df_pmix = df_product.reindex(
     columns=['Location', 'MenuItem', 'Qty', 'Price', 'Sales', 'Cat1', 'Cat2', 'Cat3'])
 df_product = df_pmix
+
 # Menu Price Analysis used for food cost info.
 df_cost = pd.read_csv('Menu Price Analysis.csv',
                       skiprows=3, sep=',', thousands=',')
@@ -66,6 +69,7 @@ df_cost.drop(columns={'MenuItemName', 'Cost1', 'Profit1', 'Textbox43', 'PriceNee
 df_pmix = df_cost.reindex(columns=['Location', 'MenuItem', 'Cost', 'AvgPrice'])
 df_cost = df_pmix
 
+# Combine the two imports into one dataframe and clean the data.
 df_MenuEng = pd.merge(df_product, df_cost, on='MenuItem',
                       how='left', sort=False)
 df_MenuEng.rename(columns={'Location_x': 'Location'}, inplace=True)
@@ -87,6 +91,7 @@ df_MenuEng['Margin'] = df_MenuEng.apply(
 df_pmix = df_MenuEng.reindex(columns=['Location', 'MenuItem', 'Qty', 'Price',
                                       'FoodCost', 'Sales', 'Cost', 'Margin', 'Cat1', 'Cat2', 'Cat3'])
 df_MenuEng = df_pmix
+
 for loc in cat1_list:
     with pd.ExcelWriter(f'MenuEngineering-{loc}.xlsx') as writer:  # pylint: disable=abstract-class-instantiated
         for cat in cat2_list:
@@ -94,7 +99,7 @@ for loc in cat1_list:
             sort_list = ['Star', 'Opportunity', 'Puzzle', 'Dog']
             df = engineer(df)
             df['rating'] = df.apply(rating, axis=1)
-            df.sort_values(by='rating', inplace=True,
+            df.sort_values(by='Qty', inplace=True,
                            ascending=False, ignore_index=True)
             location = df.loc[[0], 'Location']
             df.drop(columns={'Cat3', 'qty_mn', 'mrg_mn'}, inplace=True)
