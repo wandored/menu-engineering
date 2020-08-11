@@ -99,7 +99,7 @@ for loc in cat1_list:
             sort_list = ['Star', 'Opportunity', 'Puzzle', 'Dog']
             df = engineer(df)
             df['rating'] = df.apply(rating, axis=1)
-            df.sort_values(by='Qty', inplace=True,
+            df.sort_values(by='Sales', inplace=True,
                            ascending=False, ignore_index=True)
             location = df.loc[[0], 'Location']
             df.drop(columns={'Cat3', 'qty_mn', 'mrg_mn'}, inplace=True)
