@@ -96,7 +96,6 @@ for loc in cat1_list:
     with pd.ExcelWriter(f'MenuEngineering-{loc}.xlsx') as writer:  # pylint: disable=abstract-class-instantiated
         for cat in cat2_list:
             df = menucatagory(cat)
-            sort_list = ['Star', 'Opportunity', 'Puzzle', 'Dog']
             df = engineer(df)
             df['rating'] = df.apply(rating, axis=1)
             df.sort_values(by='Sales', inplace=True,
@@ -106,3 +105,18 @@ for loc in cat1_list:
             print(f'{cat} Menu Engineering for {location}')
             print(df)
             df.to_excel(writer, sheet_name=cat, index=False)
+
+for loc in cat1_list:
+    with open('MenuEngineering.html', 'w') as writer:
+        for cat in cat2_list:
+            df = menucatagory(cat)
+            df = engineer(df)
+            df['rating'] = df.apply(rating, axis=1)
+            df.sort_values(by='Sales', inplace=True,
+                           ascending=False, ignore_index=True)
+            location = df.loc[[0], 'Location']
+            df.drop(columns={'Location', 'Cat3',
+                             'qty_mn', 'mrg_mn'}, inplace=True)
+            html = df.to_html()
+            writer.write(f'{cat} Menu Engineering for {location}/n')
+            writer.write(html)
