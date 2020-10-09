@@ -7,6 +7,8 @@ df_product = pd.DataFrame()
 df_cost = pd.DataFrame()
 df_MenuEng = pd.DataFrame()
 
+pd.set_option('display.max_rows', 100)
+
 
 def removedups(x):
     # Turn the list into a dict then back to a list to remove duplicates
@@ -50,8 +52,9 @@ input('Press "Enter" when you are ready to continue')
 
 # Imports and cleans data into dataframe
 df_product = pd.read_csv('Product Mix.csv', skiprows=3, sep=',', thousands=',')
+# print(df_product)
 df_product[['Location', 'MenuItem']
-           ] = df_product['TransferDate'].str.split('- ', expand=True)
+           ] = df_product['TransferDate'].str.split(' - ', expand=True)
 df_product.rename(columns={'Cost': 'Price', 'Total': 'Sales'}, inplace=True)
 df_product.drop(columns={'Textbox3', 'Textbox27', 'TransferDate',
                          'ToLocationName', 'dm_Quantity', 'Textbox17', 'Textbox20'}, inplace=True)
@@ -63,7 +66,7 @@ df_product = df_pmix
 df_cost = pd.read_csv('Menu Price Analysis.csv',
                       skiprows=3, sep=',', thousands=',')
 df_cost[['Location', 'MenuItem']
-        ] = df_cost['MenuItemName'].str.split('- ', expand=True)
+        ] = df_cost['MenuItemName'].str.split(' - ', expand=True)
 df_cost.drop(columns={'MenuItemName', 'Cost1', 'Profit1', 'Textbox43', 'PriceNeeded1', 'AvgPrice1', 'Textbox35',
                       'TargetMargin1', 'Profit', 'ProfitPercent', 'TargetMargin', 'Variance', 'PriceNeeded'}, inplace=True)
 df_pmix = df_cost.reindex(columns=['Location', 'MenuItem', 'Cost', 'AvgPrice'])
@@ -83,7 +86,6 @@ cat1_list = df_MenuEng['Cat1']
 cat1_list = removedups(cat1_list)
 cat2_list = df_MenuEng['Cat2']
 cat2_list = removedups(cat2_list)
-
 df_MenuEng['FoodCost'] = df_MenuEng.apply(
     lambda row: row.Cost/row.Price, axis=1)
 df_MenuEng['Margin'] = df_MenuEng.apply(
@@ -93,30 +95,32 @@ df_pmix = df_MenuEng.reindex(columns=['Location', 'MenuItem', 'Qty', 'Price',
 df_MenuEng = df_pmix
 
 for loc in cat1_list:
-    with pd.ExcelWriter(f'MenuEngineering-{loc}.xlsx') as writer:  # pylint: disable=abstract-class-instantiated
+    with pd.ExcelWriter(f'MenuEngineering-{loc}.xlsx') as writer:    # pylint: disable=abstract-class-instantiated
         for cat in cat2_list:
             df = menucatagory(cat)
             df = engineer(df)
             df['rating'] = df.apply(rating, axis=1)
             df.sort_values(by='Sales', inplace=True,
                            ascending=False, ignore_index=True)
-            location = df.loc[[0], 'Location']
-            df.drop(columns={'Cat3', 'qty_mn', 'mrg_mn'}, inplace=True)
+            location = df.loc[0, 'Location']
+            df.drop(columns={'Location', 'Cat3',
+                             'qty_mn', 'mrg_mn'}, inplace=True)
+            print()
             print(f'{cat} Menu Engineering for {location}')
             print(df)
             df.to_excel(writer, sheet_name=cat, index=False)
 
 for loc in cat1_list:
-    with open('MenuEngineering.html', 'w') as writer:
+    with open('MenuEngineering.html', 'w', newline='') as writer:
         for cat in cat2_list:
             df = menucatagory(cat)
             df = engineer(df)
             df['rating'] = df.apply(rating, axis=1)
             df.sort_values(by='Sales', inplace=True,
                            ascending=False, ignore_index=True)
-            location = df.loc[[0], 'Location']
+            location = df.loc[0, 'Location']
             df.drop(columns={'Location', 'Cat3',
                              'qty_mn', 'mrg_mn'}, inplace=True)
-            html = df.to_html()
-            writer.write(f'{cat} Menu Engineering for {location}/n')
+            html = df.to_html(justify='center')
+            writer.write(f'Menu Engineering for {cat}s at {location}')
             writer.write(html)
