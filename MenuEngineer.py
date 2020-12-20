@@ -56,10 +56,6 @@ def menucatagory(catg):
 
 
 os.system('clear')
-print()
-print('### Download "PRODUCT MIX.CSV" and "MENU PRICE ANALYSIS.CSV" files before you continue ###')
-print()
-input('Press "Enter" when you are ready to continue')
 
 df_product = pd.read_csv('Product Mix.csv',
                          skiprows=3, sep=',', thousands=',')
@@ -68,6 +64,7 @@ df_cost = pd.read_csv('Menu Price Analysis.csv',
 
 store_list = df_product['Textbox27']
 store_list = removedups(store_list)
+
 # Make dictionary of dataframes for each location
 product_dict = {store: make_dataframe(store) for store in store_list}
 price_dict = {store: make_dataframe1(store) for store in store_list}
@@ -112,37 +109,45 @@ for store in store_list:
     MenuEng['FoodCost'] = MenuEng.apply(lambda row: row.Cost/row.Price, axis=1)
     MenuEng['Margin'] = MenuEng.apply(
         lambda row: row.Price - row.Cost, axis=1)
-    df_pmix = MenuEng.reindex(columns=['Location', 'MenuItem', 'Qty', 'Price',
-                                       'FoodCost', 'Sales', 'Cost', 'Margin', 'Cat1', 'Cat2', 'Cat3'])
+    MenuEng['Tot_Cost'] = MenuEng.apply(lambda row: row.Qty * row.Cost, axis=1)
+    MenuEng['Profit'] = MenuEng.apply(lambda row: row.Qty * row.Margin, axis=1)
+    df_pmix = MenuEng.reindex(columns=['Location', 'MenuItem', 'Qty', 'Price', 'Cost', 'Margin',
+                                       'FoodCost', 'Sales', 'Tot_Cost', 'Profit', 'Cat1', 'Cat2', 'Cat3'])
     MenuEng = df_pmix
-
+    # print(MenuEng)
     for loc in cat1_list:
-        with pd.ExcelWriter(f'./output/MenuEngineering-{store}.xlsx') as writer:    # pylint: disable=abstract-class-instantiated
+        with pd.ExcelWriter(f'./output/{store}.xlsx') as writer:    # pylint: disable=abstract-class-instantiated
             for cat in cat2_list:
                 df = menucatagory(cat)
                 df = engineer(df)
                 df['rating'] = df.apply(rating, axis=1)
-                df.sort_values(by='Sales', inplace=True,
+                df.sort_values(by='Profit', inplace=True,
                                ascending=False, ignore_index=True)
-                location = df.loc[0, 'Location']
                 df.drop(columns={'Location', 'Cat3',
                                  'qty_mn', 'mrg_mn'}, inplace=True)
+                df.loc['Total'] = pd.Series(
+                    df[['Qty', 'Sales', 'Tot_Cost', 'Profit']].sum())
+                df.at['Total', 'FoodCost'] = df.at['Total',
+                                                   'Tot_Cost']/df.at['Total', 'Sales']
                 print()
-                print(f'{cat} Menu Engineering for {location}')
+                print(f'{cat} Menu Engineering for {store}')
                 print(df)
                 df.to_excel(writer, sheet_name=cat, index=False)
 
     for loc in cat1_list:
-        with open('MenuEngineering.html', 'w', newline='') as writer:
+        with open(f'./output/{store}.html', 'w', newline='') as writer:
             for cat in cat2_list:
                 df = menucatagory(cat)
                 df = engineer(df)
                 df['rating'] = df.apply(rating, axis=1)
-                df.sort_values(by='Sales', inplace=True,
+                df.sort_values(by='Profit', inplace=True,
                                ascending=False, ignore_index=True)
-                location = df.loc[0, 'Location']
                 df.drop(columns={'Location', 'Cat3',
                                  'qty_mn', 'mrg_mn'}, inplace=True)
+                df.loc['Total'] = pd.Series(
+                    df[['Qty', 'Sales', 'Tot_Cost', 'Profit']].sum())
+                df.at['Total', 'FoodCost'] = df.at['Total',
+                                                   'Tot_Cost']/df.at['Total', 'Sales']
                 html = df.to_html(justify='center')
                 writer.write(f'Menu Engineering for {cat}s at {store}')
                 writer.write(html)
