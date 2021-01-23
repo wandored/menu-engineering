@@ -8,8 +8,6 @@ df_cost = pd.DataFrame()
 df_MenuEng = pd.DataFrame()
 MenuEngineer = {}
 
-#pd.set_option('display.max_rows', 100)
-
 
 def removedups(x):
     # Turn the list into a dict then back to a list to remove duplicates
@@ -55,11 +53,21 @@ def menucatagory(catg):
     return df
 
 
+def removeSpecial(df):
+    # Removes specialty items from the dataframes
+    file = open('./specialty.txt')
+    specialty_list = file.read().split(',')
+    file.close
+#    specialty_list = ['TIP', 'TAX', 'PENS', 'APRON', 'MAIN VERBAL', 'NAME', 'R', 'MR', 'MED', 'MW', 'WELL', 'COLD R', 'WARM R', 'PINK','HOT R', 'BROWN', 'PLAIN']
+    for item in specialty_list:
+        df = df.drop(df[df.MenuItem == item].index)
+    return df
+
 os.system('clear')
 
-df_product = pd.read_csv('Product Mix.csv',
-                         skiprows=3, sep=',', thousands=',')
-df_cost = pd.read_csv('Menu Price Analysis.csv',
+df_product=pd.read_csv('Product Mix.csv',
+                         skiprows = 3, sep = ',', thousands = ',')
+df_cost=pd.read_csv('Menu Price Analysis.csv',
                       skiprows=3, sep=',', thousands=',')
 
 store_list = df_product['Textbox27']
@@ -68,6 +76,7 @@ store_list = removedups(store_list)
 # Make dictionary of dataframes for each location
 product_dict = {store: make_dataframe(store) for store in store_list}
 price_dict = {store: make_dataframe1(store) for store in store_list}
+
 for key in product_dict.keys():
     product_dict[key][['Location', 'MenuItem']
                       ] = product_dict[key]['TransferDate'].str.split(' - ', expand=True)
@@ -78,7 +87,6 @@ for key in product_dict.keys():
     df_pmix = product_dict[key].reindex(
         columns=['Location', 'MenuItem', 'Qty', 'Price', 'Sales', 'Cat1', 'Cat2', 'Cat3'])
     product_dict[key] = df_pmix
-#    print(product_dict[key])
 
 # Menu Price Analysis used for food cost info.
 for key in price_dict.keys():
@@ -89,7 +97,6 @@ for key in price_dict.keys():
     df_pmix = price_dict[key].reindex(
         columns=['Location', 'MenuItem', 'Cost', 'AvgPrice'])
     price_dict[key] = df_pmix
-#    print(price_dict[key])
 
 # Combine the two imports into one dataframe and clean the data.
 for store in store_list:
@@ -99,16 +106,15 @@ for store in store_list:
     MenuEng.drop(columns={'Location_y', 'AvgPrice'}, inplace=True)
     df_pmix = MenuEng.reindex(columns=[
                               'Location', 'MenuItem', 'Qty', 'Price', 'Sales', 'Cost', 'Cat1', 'Cat2', 'Cat3'])
-    MenuEng = df_pmix.drop(df_pmix[df_pmix.Price == 0].index)
+    MenuEng = removeSpecial(df_pmix)
 
 # Get list of categories from data
     cat1_list = MenuEng['Cat1']
     cat1_list = removedups(cat1_list)
     cat2_list = MenuEng['Cat2']
     cat2_list = removedups(cat2_list)
-    MenuEng['FoodCost'] = MenuEng.apply(lambda row: row.Cost/row.Price, axis=1)
-    MenuEng['Margin'] = MenuEng.apply(
-        lambda row: row.Price - row.Cost, axis=1)
+    MenuEng['FoodCost'] = MenuEng.apply(lambda row: row.Cost/row.Price if row.Price else 0, axis=1)
+    MenuEng['Margin'] = MenuEng.apply(lambda row: row.Price - row.Cost, axis=1)
     MenuEng['Tot_Cost'] = MenuEng.apply(lambda row: row.Qty * row.Cost, axis=1)
     MenuEng['Profit'] = MenuEng.apply(lambda row: row.Qty * row.Margin, axis=1)
     df_pmix = MenuEng.reindex(columns=['Location', 'MenuItem', 'Qty', 'Price', 'Cost', 'Margin',
