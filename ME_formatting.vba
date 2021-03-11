@@ -1,5 +1,5 @@
 Sub casual_format()
-
+    
     Dim sh As Long
     Dim ws As Worksheet
     Dim Rng As Range
@@ -7,26 +7,29 @@ Sub casual_format()
     Dim LR As Long
     Dim i As Long
     Dim wsht As Worksheet
-
-    Categories = Array("Appetizer", "Salad", "Sandwich", "Entree", "Side", "Kid Meal", "Dessert", "Add-On", "Beverage", "Beer", "Wine", "Liquor", "Gift Card", "Catering", "None")
+    Dim firstRow As Long
+    Dim lastRow As Long
+    
+            
+    Categories = Array("Appetizer", "Salad", "Sandwich", "Entree", "Side", "Dessert", "Early Evening", "Brunch", "Kid Meal", "Add-On", "Beverage", "Special", "Catering", "No Charge", "Beer", "Wine", "Liquor", "Gift Card", "None")
     Sheet_Num = ActiveWorkbook.Sheets.Count
-
-
+        
+    
     For sh = ActiveSheet.Index To Sheets.Count
         Sheets(sh).Select
         Range("C:C,D:D,E:E,G:G,H:H,I:I").Select
         Selection.Style = "Currency"
         Columns("F:F").Select
-        Selection.Style = "Percent"
+        Selection.NumberFormat = "0.0%"
         Columns("A:L").Select
         Selection.Columns.AutoFit
         Set ws = ActiveSheet
-        For Each cell In ws.Columns(1).Cells
-            If IsEmpty(cell) = True Then cell.Select: Exit For
-        Next cell
+        For Each Cell In ws.Columns(1).Cells
+            If IsEmpty(Cell) = True Then Cell.Select: Exit For
+        Next Cell
         Selection.Value = ws.Name
     Next sh
-
+    
     i = 1
     For Each cat In Categories
         If WorksheetExists((cat)) Then
@@ -34,14 +37,14 @@ Sub casual_format()
             i = i + 1
         End If
     Next cat
-
+        
     Sheets.Add.Name = "Totals"
     Sheets("Totals").Move before:=Sheets(1)
-
+    
     ActiveWorkbook.Sheets("Appetizer").Range("A1").EntireRow.Copy Worksheets("Totals").Range("A1")
-
     i = 2
     C = Sheets.Count
+    
     For C = 1 To C
         For Each cat In Categories
             If Sheets(C).Name = cat Then
@@ -52,28 +55,34 @@ Sub casual_format()
             End If
         Next cat
     Next C
-
+    
+    Sheets ("No Charge")
+        
     Sheets("Totals").Columns("J:L").Delete
     Sheets("Totals").Columns("C:E").Delete
-    Sheets("Totals").Range("14:16").Insert
-    Sheets("Totals").Range("11:14").Insert
-    Sheets("Totals").Range("A11").Value = "Totals"
-    Sheets("Totals").Range("A18").Value = "Totals"
-    Sheets("Totals").Range("D11") = "=Sum(D2:D10)"
-    Sheets("Totals").Range("D18") = "=Sum(D15:D17)"
-    Sheets("Totals").Range("E11") = "=Sum(E2:E10)"
-    Sheets("Totals").Range("E18") = "=Sum(E15:E17)"
-    Sheets("Totals").Range("F11") = "=Sum(F2:F10)"
-    Sheets("Totals").Range("F18") = "=Sum(F15:F17)"
-    Sheets("Totals").Range("C11") = "=$E$11/$D$11"
-    Sheets("Totals").Range("C18") = "=$E$18/$D$18"
+
+    Set Rng = Sheets("Totals").Range("A1:A19").Find("Liquor")
+    firstRow = Rng.Offset(-2, 0).Row
+    lastRow = Rng.Row
+    Rng.Offset(1, 0).Resize(3).EntireRow.Insert
+    Rng.Offset(1, 0).Value = "Alcohol Total"
+    Rng.Offset(1, 3).Formula = "=Sum(D" & firstRow & ":D" & lastRow & ")"
+    Rng.Offset(1, 4).Formula = "=Sum(E" & firstRow & ":E" & lastRow & ")"
+    Rng.Offset(1, 5).Formula = "=Sum(F" & firstRow & ":F" & lastRow & ")"
+    Rng.Offset(1, 2).Formula = "=$E$" & lastRow + 1 & "/$D$" & lastRow + 1
+    
+    Set Rng = Sheets("Totals").Range("A1:A19").Find("No Charge")
+    firstRow = 2
+    lastRow = Rng.Row
+    Rng.Offset(1, 0).Resize(3).EntireRow.Insert
+    Rng.Offset(1, 0).Value = "Food Total"
+    Rng.Offset(1, 3).Formula = "=Sum(D" & firstRow & ":D" & lastRow & ")"
+    Rng.Offset(1, 4).Formula = "=Sum(E" & firstRow & ":E" & lastRow & ")"
+    Rng.Offset(1, 5).Formula = "=Sum(F" & firstRow & ":F" & lastRow & ")"
+    Rng.Offset(1, 2).Formula = "=$E$" & lastRow + 1 & "/$D$" & lastRow + 1
+    
     Sheets("Totals").Columns.AutoFit
-
-'    Sheets("Totals").Range("A11:F11").Font.Bold
-'    Sheets("Totals").Range("A18:F18").Font.Bold
-'    Sheets("Totals").Range("A11:F11").Borders(xlEdgeBottom).LineStyle = XlLineStyle.xlContinuous
-'    Sheets("Totals").Range("A18:F18").Borders(xlEdgeBottom).LineStyle = XlLineStyle.xlContinuous
-
+    
 End Sub
 
 Function WorksheetExists(sh As String) As Boolean

@@ -153,8 +153,12 @@ with pd.ExcelWriter('./output/NoneTab.xlsx') as writer:     # pylint: disable=ab
     df_nonetab = df_nonetab.groupby(['MenuItem']).sum()
     df_nonetab.sort_values(by='Qty', inplace=True,
                            ascending=False)
-    print(df_nonetab)
+    print(df_nonetab.head(25))
     df_nonetab.to_excel(writer)
+    print()
+    print("--------------------------------------------------------------------")
+    print(df_nonetab.info())
+    print(df_nonetab.describe())
 
 #   with open(f'./output/{store}.html', 'w', newline='') as writer:
 #       for cat in cat2_list:
