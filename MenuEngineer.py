@@ -4,6 +4,13 @@ import sys
 import pandas as pd
 import numpy as np
 
+# os.system("/home/wandored/Projects/r365cleaner/csvCleaner.sh")
+os.system('sed -i "s/CHOPHOUSE\ -\ NOLA/CHOPHOUSE-NOLA/g" Product\ Mix.csv')
+os.system('sed -i "s/CHOPHOUSE\ -\ NOLA/CHOPHOUSE-NOLA/g" Menu\ Price\ Analysis.csv')
+os.system('sed -i "s/\ -\ /-/g2" Product\ Mix.csv')
+os.system('sed -i "s/\ -\ /-/g2" Menu\ Price\ Analysis.csv')
+os.system('sed -i "s/CAFÉ/CAFE/g" Product\ Mix.csv')
+os.system('sed -i "s/CAFÉ/CAFE/g" Menu\ Price\ Analysis.csv')
 
 with open('Product Mix.csv', newline='') as f:
     reader = csv.reader(f)
@@ -159,6 +166,9 @@ with pd.ExcelWriter('./output/NoneTab.xlsx') as writer:     # pylint: disable=ab
     print("--------------------------------------------------------------------")
     print(df_nonetab.info())
     print(df_nonetab.describe())
+
+os.system("cp /home/wandored/Projects/r365cleaner/output/*.xlsx /home/wandored/Dropbox/Restaurant365/Report_Data")
+
 
 #   with open(f'./output/{store}.html', 'w', newline='') as writer:
 #       for cat in cat2_list:
