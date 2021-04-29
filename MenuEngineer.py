@@ -4,7 +4,6 @@ import sys
 import pandas as pd
 import numpy as np
 
-# os.system("/home/wandored/Projects/r365cleaner/csvCleaner.sh")
 os.system('sed -i "s/CHOPHOUSE\ -\ NOLA/CHOPHOUSE-NOLA/g" Product\ Mix.csv')
 os.system('sed -i "s/CHOPHOUSE\ -\ NOLA/CHOPHOUSE-NOLA/g" Menu\ Price\ Analysis.csv')
 os.system('sed -i "s/\ -\ /-/g2" Product\ Mix.csv')
@@ -158,7 +157,7 @@ for store in store_list:
 
 with pd.ExcelWriter('./output/NoneTab.xlsx') as writer:     # pylint: disable=abstract-class-instantiated
     df_nonetab = df_nonetab.groupby(['MenuItem']).sum()
-    df_nonetab.sort_values(by='Qty', inplace=True,
+    df_nonetab.sort_values(by='Sales', inplace=True,
                            ascending=False)
     print(df_nonetab.head(25))
     df_nonetab.to_excel(writer)
