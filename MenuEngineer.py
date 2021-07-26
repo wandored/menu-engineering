@@ -6,14 +6,16 @@ import sys
 import pandas as pd
 import numpy as np
 
-os.system('sed -i "s/CHOPHOUSE\ -\ NOLA/CHOPHOUSE-NOLA/g" Product\ Mix.csv')
-os.system('sed -i "s/CHOPHOUSE\ -\ NOLA/CHOPHOUSE-NOLA/g" Menu\ Price\ Analysis.csv')
-os.system('sed -i "s/\ -\ /-/g2" Product\ Mix.csv')
-os.system('sed -i "s/\ -\ /-/g2" Menu\ Price\ Analysis.csv')
-os.system('sed -i "s/CAFÉ/CAFE/g" Product\ Mix.csv')
-os.system('sed -i "s/CAFÉ/CAFE/g" Menu\ Price\ Analysis.csv')
+os.system(
+    'sed -i "s/CHOPHOUSE\ -\ NOLA/CHOPHOUSE-NOLA/g" ./downloads/Product\ Mix.csv')
+os.system(
+    'sed -i "s/CHOPHOUSE\ -\ NOLA/CHOPHOUSE-NOLA/g" ./downloads/Menu\ Price\ Analysis.csv')
+os.system('sed -i "s/\ -\ /-/g2" ./downloads/Product\ Mix.csv')
+os.system('sed -i "s/\ -\ /-/g2" ./downloads/Menu\ Price\ Analysis.csv')
+os.system('sed -i "s/CAFÉ/CAFE/g" ./downloads/Product\ Mix.csv')
+os.system('sed -i "s/CAFÉ/CAFE/g" ./downloads/Menu\ Price\ Analysis.csv')
 
-with open('Product Mix.csv', newline='') as f:
+with open('./downloads/Product Mix.csv', newline='') as f:
     reader = csv.reader(f)
     next(reader)
     x = next(reader)
@@ -81,10 +83,11 @@ os.system('clear')
 print(f'Start Date {start_date}')
 print(f'End Date {end_date}')
 
-df_product = pd.read_csv('Product Mix.csv',
+df_product = pd.read_csv('./downloads/Product Mix.csv',
                          skiprows=3, sep=',', thousands=',')
-df_cost = pd.read_csv('Menu Price Analysis.csv',
+df_cost = pd.read_csv('./downloads/Menu Price Analysis.csv',
                       skiprows=3, sep=',', thousands=',')
+df_cost['Location'] = df_cost['Location'].str.strip()
 df_nonetab = pd.DataFrame()
 store_list = df_product['Textbox27']
 store_list = removedups(store_list)
@@ -107,8 +110,8 @@ for key in product_dict.keys():
 
 # Menu Price Analysis used for food cost info.
 for key in price_dict.keys():
-    price_dict[key][['X', 'MenuItem']
-                    ] = price_dict[key]['MenuItemName'].str.split(' - ', expand=True)
+    price_dict[key][['X', 'MenuItem']] = price_dict[key]['MenuItemName'].str.split(
+        ' - ', expand=True)
     price_dict[key].drop(columns={'X', 'MenuItemName', 'Cost1', 'Profit1',
                                   'Textbox43', 'PriceNeeded1', 'AvgPrice1',
                                   'Textbox35', 'TargetMargin1', 'Profit',
