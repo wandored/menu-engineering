@@ -1,9 +1,9 @@
-""" create report for single item """
+""" create report for Gift Card Sales """
 import csv
 import os
 import pandas as pd
 
-menu_item = input("Enter the product you wish to track: ")
+#menu_item = input("Enter the product you wish to track: ")
 df_product = pd.DataFrame()
 df_cost = pd.DataFrame()
 df_MenuEng = pd.DataFrame()
@@ -85,28 +85,25 @@ df_cost = df_pmix
 
 # Combine the two imports into one dataframe and clean the data.
 df_MenuEng = pd.merge(df_product, df_cost, on="MenuItem", how="left", sort=False)
-df_MenuEng.rename(columns={"Location_x": "Location"}, inplace=True)
-df_MenuEng.drop(columns={"Location_y", "AvgPrice"}, inplace=True)
+df_MenuEng.rename(columns={"Location_x": "Location", "Price": "Avg Price"}, inplace=True)
+df_MenuEng.drop(columns={"Location_y", "AvgPrice", "Cost", "Cat1", "Cat3"}, inplace=True)
 df_pmix = df_MenuEng.reindex(
     columns=[
         "Location",
         "MenuItem",
         "Qty",
-        "Price",
+        "Avg Price",
         "Sales",
-        "Cost",
-        "Cat1",
-        "Cat2",
-        "Cat3",
+        "Cat2"
     ]
 )
-df_MenuEng = df_pmix.drop(df_pmix[df_pmix.MenuItem != menu_item].index)
+df_MenuEng = df_pmix.drop(df_pmix[df_pmix.Cat2 != "Gift Card"].index)
 df_MenuEng.drop_duplicates(subset=["Location"], keep="last", inplace=True)
 
 with pd.ExcelWriter(
-    f"./output/{menu_item}.xlsx"
+    f"./output/GiftCards.xlsx"
 ) as writer:  # pylint: disable=abstract-class-instantiated
     df_MenuEng.sort_values(by="Qty", inplace=True, ascending=False, ignore_index=True)
-    df_MenuEng.to_excel(writer, sheet_name=menu_item, index=False)
+    df_MenuEng.to_excel(writer, sheet_name="Gift Cards", index=False)
 
 print(df_MenuEng)
