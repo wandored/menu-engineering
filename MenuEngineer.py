@@ -1,4 +1,6 @@
-"""Import sales mix and export menu engineering report to excel"""
+"""
+Import sales mix and export menu engineering report to excel
+"""
 
 import csv
 import os
@@ -209,8 +211,8 @@ for store in store_list:
     )
     df_menu = df_pmix
     df_none = df_menu.drop(df_menu[df_menu.Cat2 != "None"].index)
-    df_nonetab = df_nonetab.append(df_none, ignore_index=True)
-    df_nonetab.drop(columns={"Location"}, inplace=True)
+    if not df_none.empty:
+        df_nonetab = pd.concat([df_nonetab, df_none])
 
     with pd.ExcelWriter(
         f"./output/{store}.xlsx"
