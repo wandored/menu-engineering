@@ -1,24 +1,35 @@
 $10 Bonus Card
-IN BLODDY MARY
+Private Dining
+Extra Dressing
 $50 Room Deposit
 & APPLE JUICE
 & CRANBERRY JUICE
+& Coke
+& Cranberry
 & GINGER
 & GINGER ALE
 & GRAPEFRUIT
 & GRAPEFRUIT JUICE
+& Ginger Ale
+& Lime Twist
 & MILK
 & O. JUICE
 & O.J.
 & ORANGE JUICE
 & PINEAPPLE JUICE
+& Pineapple
+& Rocks
 & SODA WATER
 & SOUR
 & SPRITE
+& Soda Water
 & TOM. JUICE
 & TOMATO JUICE
 & TONIC
+& Tonic
+& Water
 ** NO HOLD **
+** TO-GO **
 **** A-LG PARTY ****
 **** E- LG PARTY ****
 ****2 PART CHECK*****
@@ -36,7 +47,9 @@ $50 Room Deposit
 *FIRE ENTREE*
 *FIRE SALAD*
 15% DELIVERY FEE SVC CHG
+2 OZ
 2 PLATES
+2 Pens
 203
 3% SERVICE CHARGE
 3-XTR OZ
@@ -64,22 +77,36 @@ AS APP
 AS ENTREE
 ASHTON ESG 21 YR
 AUDIO VISUAL FEE
+Add Blackened Chicken for Salad
+Ahi Tuna for Poke
 Allergy Alert
 B
 BAR MEMO
 BAR TO GO
+BERRIES ON SIDE
 BIB APRONS
 BLACK POUCH
 BLACKEN
 BLACKENED
 BLK/WHT RUSS
 BLOODY MARYup charge
+BLUE
 BLUE POINT
 BROILED
 BROWN
 BROWN Well
 BUTTERFLY
+Bar Ice Cream
+Big Rock Ice
+Blackened
+Blackened Chicken for Salad
+Blackened Salmon for Salad
 Blk/WhtRussian
+Bowl
+Broiled Chicken for Salad
+Broiled Salmon for Salad
+Broiled Shrimp for Steak (7)
+Butterfly
 C
 CAPE CODDER
 CHOPHOUSE PENS
@@ -93,6 +120,9 @@ COSMO UP
 COUPON $
 CREAMY
 CRUMBER
+Catering Charge
+Cranberry
+Crispy
 D TONIC
 DIRECT BIL
 DIRTY
@@ -102,6 +132,8 @@ DOUBLE
 DRESSING ON SIDE
 DRY
 DRY MANHATTAN
+Delivery Charge
+Dont Make-Throw away!
 E DOUB CHECK
 E THROWAWAY
 E TO GO
@@ -120,12 +152,23 @@ EMP GOLF
 END CUT
 ENTREE MEMO
 EXTRA PLATE
+EXTRA Plate/Bowl/Utensil
+Egg Allergy
+Extra Crispy
 FIRE ENTREE
 FISH ALLERGY
-FLATS ONLY
 FRIED
 FROZEN
 FULL GLASS WINE
+Fish Allergy
+Fork
+Fried Chicken Strips
+Fried Oysters for Salad (8)
+Fried Shrimp for Salad (10)
+Fried Shrimp for Salad (12)
+Fried Shrimp for Steak (7)
+Fried Shrimp for Taco
+Fried Strips for Cali-Club (4)
 G-Facemask
 GIBSON
 GIMLET
@@ -137,8 +180,10 @@ HAMPTON COURT
 HATS
 HOT R
 HOT R Med
+Hot Dog for Killer
 IN BAYBREEZE
 IN BLACK RUSSIAN
+IN BLODDY MARY
 IN BLOODY MARY
 IN BLOODY MARY
 IN CAPE CODDER
@@ -160,6 +205,7 @@ IN MARTINI ROCKS
 IN OLD FASHIONED
 IN PERFECT MANHATTAN
 IN PINA COLADA
+IN PLANTERS PUNCH
 IN PRESBYTERIAN
 IN ROB ROY
 IN RUSTY NAIL
@@ -184,8 +230,11 @@ KID PINAPPLE JUICE
 KID PINEAPPLE JUICE
 KID REFILL
 KID WATER
+Kid French Fries
 LARGE SALAD
 LIGHTLY BLACK
+Large Party
+Liquor Tax
 MAC PETIT CORONA CAFE
 MAIN VERBAL
 MALPEQUE
@@ -208,12 +257,21 @@ MEMO
 MESSAGE
 MILK ALLERGY
 MISC $.50
+MOJITO UP
 MONTECRISTO WHITE
 MORE MODS
 MR
 MUSHROOMS SALAD
 MW
 MartiniUP
+Medallions for Salad (2)
+Medallions for Sand (2)
+Medium
+Medium Rare
+Medium Well
+Mezz Style
+Milk Allergy
+Monster BG Set
 MoviePromo$5Off
 N
 NAME
@@ -225,12 +283,25 @@ NO ALMONDS
 NO ARUGULA
 NO AVOCADO
 NO AVOCADO
+NO Almonds
+NO American Cheese
+NO Arugula
+NO Avocado
 NO BACON
 NO BBQ
 NO BEVERAGE
 NO BLUE CHEESE
+NO BLUE CHEESE CRUMBLES
 NO BUN
 NO BUTTER
+NO Bacon
+NO Bacon & Ham
+NO Bacon Slices (2)
+NO Balsamic Vinaigrette
+NO Blackened
+NO Bun
+NO Burger Patty 8oz
+NO Butter
 NO CAJUN BUTTER
 NO CARAMEL
 NO CHAR
@@ -242,32 +313,88 @@ NO CROIS
 NO CROS
 NO CROSSIANT
 NO CROUTONS
+NO Caesar Dressing
+NO Cajun Butter
+NO Cheddar Cheese
+NO Cheese
+NO Cheese Sauce
+NO Chicken Breast 6oz
+NO Chipotle Aioli
+NO Chipotle Mayo
+NO Chopped Tomato
+NO Cilantro
+NO Cocktail Sauce
+NO Crackers
+NO Croissant
+NO Crouton
+NO Croutons
 NO DELAY
 NO DRESSING
 NO EGG
+NO EVOO
+NO Egg
+NO Extra Croissant
+NO French Fries
+NO Fried Flounder
+NO Fried Oyster (4)
+NO Fried Shrimp (5)
 NO GARLIC BUTTER
 NO GARNISH
 NO GLASS
+NO Garlic Aioli
 NO Glass
+NO Grated Romano
 NO HAM
 NO HCOLD
 NO HONBUTTR
 NO HONEYBTR
+NO Ham 2oz
+NO Honey Butter
+NO Honey Mustard
+NO Honeybutter
+NO House
+NO House Salad
 NO ICE
 NO ICECRM
+NO Ice Cream
 NO JACK CHEESE
 NO JALAPENOS
 NO JAPS
 NO JICAMA SLAW
+NO Jack Cheese
+NO Jicama Slaw
 NO LETTUCE
+NO Large Shrimp (5)
+NO Leaf Lettuce
+NO Lettuce
+NO Loaded
 NO MANGO
 NO MAYO
 NO MEAT
 NO MUG
 NO MUSHROOMS
+NO Mayo
+NO Medium
+NO Mixed Cheese
+NO Mixed Cheese 2oz
+NO Mushrooms
+NO Mussels
+NO No Avocado
+NO No Dressing
+NO No Salad
+NO Not Spicy
 NO OLIVES
 NO ONION
+NO Oil & Vinegar
+NO Onion
+NO Oysters
 NO PICKLE
+NO Parsley
+NO Pickle
+NO Plain
+NO Queso Fresco
+NO Ranch
+NO Redskin Mashed Potatoes
 NO SALAD
 NO SAUCE
 NO SCALLIONS
@@ -277,21 +404,198 @@ NO SIDE
 NO SLAW
 NO SOUR CREAM
 NO STRAWBERRY
+NO Sauce
+NO Sausage
+NO Sauteed Mushrooms
+NO Sauteed Onions
+NO Scallions
+NO Seasoning
+NO See Server
+NO Sherry
+NO Shredded Romano
+NO Shrimp
+NO Slaw
+NO Sour Cream
+NO Strips Sauce
 NO TOM SAL
 NO TOMATO
 NO TOPPING
 NO TURKEY
+NO Tartar Sauce
+NO Tomato Slices
+NO Turkey 2oz
+NO Vinaigrette
 NO WH CREAM
 NON ALC COLLINS
 NON-BEV
 NYP PENS
+No All Romaine Lettuce
+No American Cheese
+No Arugula
+No Au Jus
+No Avocado
+No BBQ Sauce
+No Bacon
+No Bacon & Ham
+No Bacon Slices (2)
+No Baked Potato
+No Balsamic Vinaigrette
+No Blackened
+No Blackened Chicken
+No Blackened Chicken for Salad
+No Blackened Shrimp (5)
+No Blue Cheese Crumbles
+No Broiled Chicken 6oz
+No Broiled Salmon for Salad
+No Bun
+No Butter
+No Caesar Dressing
+No Caesar Salad
+No Cajun Butter
+No Canadian Bacon
+No Char
+No Cheddar Cheese
+No Cheese Sauce
+No Chicken Breast
+No Chicken Breast 6oz
+No Chili
+No Chipotle Aioli
+No Chocolate Sauce
+No Chopped Tomato
+No Cilantro
+No Cocktail Sauce
+No Cornbread
+No Cranberry
+No Crispy
+No Crispy Onions
+No Croissant
+No Crouton
+No Croutons
+No Curry Mayo
+No Dressing
+No Dressing
+No Dressing ON SIDE
+No Dressing On Side
+No Event Ice Cream
+No Extra Croissant
+No French Fries
+No Fried Flounder
+No Fried Oyster (4)
+No Fried Shrimp (5)
+No Garlic
+No Garlic Aioli
+No Garlic Butter
+No Garnish
 No Glass
+No Grated Romano
+No Gravy
+No Ham
+No Ham 2oz
+No Hearts of Palm
+No Honey Butter
+No Honey Mustard
+No Honey-Butter on Croissant
+No Honeybutter
+No Hot Bacon
+No House
+No House Salad
+No Ice
+No Ice Cream
+No Jack Cheese
+No Jack Cheese Slice
+No Jalapeno
+No Jalapenos
+No Jicama Slaw
+No Leaf Lettuce
+No Lemon
+No Lemon Butter
+No Lettuce
+No Lime Twist
+No Loaded
+No Mango
+No Marinara
+No Mashed Potato
+No Mayo
+No Medium Well
+No Mixed Cheese
+No Mixed Cheese 2oz
+No Mixed Greens
+No Mug
+No Mushrooms
+No Mussels On Side
+No Mustard
+No Oil & Vinegar
+No Olives
+No Onion
+No Onion Jam
+No Oys- Xtra Shrimp
+No Parmesan
+No Parsley
+No Peach Jam
+No Pickle
+No Pickled Relish
+No Pickles
+No Plain
+No Plate/Bowl/Utensil
+No Portobello Mushrooms
+No Queso Fresco
+No Ranch
+No Red Onions
+No Redskin Mashed Potatoes
+No Remoulade
+No Rocks
+No Romano Cheese
+No Rye Bread
+No Sal-sub Green Beans
+No Salad
+No Salad ON SIDE
+No Salad On Side
+No Salmon 6oz
+No Salt
+No Salt Rim
+No Salt Up
+No Sauce
+No Sauteed Mushrooms
+No Sauteed Onions
+No Scallions
+No Seasoning
+No See Server
+No Sherry
+No Shredded Romano
+No Side
+No Slaw
+No Smokey BBQ
+No Sour Cream
+No Sour Kraut
+No Southwest Grilled Corn
+No Strawberries
+No Strips Sauce
+No Sugar Rim
+No Sweet Potato
+No Sweet Soy Sauce
+No Swiss Cheese
+No Tartar Sauce
+No Thousand Island
+No Toasted
+No Tomato Slices
+No Topping
+No Tortilla Chips
+No Tree Nuts Allergy
+No Turkey 2oz
+No Vermouth
+No Walnuts
+No Whole Pickle
+Not Blackened
+OK GREAT!!
 OLD XMAS
 OLIVA CONN RESVE ROBUSTO
 OLIVA SERIE V BELICOSO
 ON SIDE
 OPEN FOOD
 OUT OF STOCK
+Oustanding
+OutStanding Tip
+Outstanding
 PADRON 64 ANNIVERSARY
 PARKING FEE
 PARTY
@@ -306,20 +610,35 @@ POSTAGE
 POUCH
 PREMIUM
 PROJECTOR
+Peanut Allergy
+Peanuts Allergy
+Pink Kiss Donation
+Plain
+Plate
+Plate/Bowl/Utensil
 Premium$1.00
 R
 R PATEL VINTAGE 99
 RARE
+RECOOK/EXPEDITE
 ROASTER STYLE
 ROB ROY
 ROCKY PATEL SUNGROWN
 RYJ 1875
 RYJ REAL
+Rare
+Refund AMEX
+Refund AMEX Tip
+Refund CASH
+Refund MASTERCARD
+Refund VISA
+Rocks
 S
 SAL MEMO
 SALAD VERBAL
 SCREEN CHARGE
 SCREEN/PROJECTOR
+SEE SERVER
 SERV APRON
 SHELLFISH ALLERGY
 SHOT
@@ -339,9 +658,22 @@ SUB RANCH
 SUB SIDE ON PLATTERS
 SUB SPIN
 SVR POUCH
+Sales Tax
+Salmon for Poke
+Salmon for Salad 6oz
+See Server
+Separate
+Server Apron
 Service Charge
+Shellfish Allergy
 Special Occasion
+Spoon
+Suggested Gratuity 18 may be changed by guest
+Suggested Gratuity May be changed by guest
+Suggested Gratuity may be changed by guest
+Suggested Gratuity my be changed by guest
 T-SHIRT LG
+T-SHRT XL
 TALL
 TAX
 THROWAWAY
@@ -350,9 +682,15 @@ TIES
 TIJ WINGS
 TIJUANA
 TIP
+TO GO
 TONIC WATER
 TREE NUT ALLERGY
+Tall
+Tonic
+Tree Nut Allergy
+Tree Nuts Allergy
 UP
+Unassigned
 VERBAL
 VIRG MARY
 WAITER JACKEST
@@ -366,6 +704,11 @@ WELL DONE
 WELLESLEY
 WHEAT ALLERGY
 WITH WHIPPED CREAM
+Water
+Well
+Well Done
+Wheat Allergy
+With Mug
 X BOWL
 X PLATE
 XTRA DRESS
