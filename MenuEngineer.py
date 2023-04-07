@@ -11,51 +11,51 @@ import numpy as np
 
 
 def upload_product_mix():
-#    root = tk.Tk()
-#    root.title("Product Mix file")
-#    root.withdraw()
-#
-#    # Set the window attributes to disable resizing and to keep the window on top of others
-#    root.resizable(False, False)
-#    root.wm_attributes("-topmost", True)
-#
-#    # Get the dimensions of the monitor that the window is on
-#    monitor_width = root.winfo_screenwidth()
-#    monitor_height = root.winfo_screenheight()
-#
-#    # Calculate the position of the window's top-left corner to be in the center of the monitor
-#    window_width = 300  # Set this to be the width of your window
-#    window_height = 200  # Set this to be the height of your window
-#    x = int((monitor_width - window_width) / 2)
-#    y = int((monitor_height - window_height) / 2)
-#    root.geometry("{}x{}+{}+{}".format(window_width, window_height, x, y))
-#
-#    file_path = filedialog.askopenfilename()
+    #    root = tk.Tk()
+    #    root.title("Product Mix file")
+    #    root.withdraw()
+    #
+    #    # Set the window attributes to disable resizing and to keep the window on top of others
+    #    root.resizable(False, False)
+    #    root.wm_attributes("-topmost", True)
+    #
+    #    # Get the dimensions of the monitor that the window is on
+    #    monitor_width = root.winfo_screenwidth()
+    #    monitor_height = root.winfo_screenheight()
+    #
+    #    # Calculate the position of the window's top-left corner to be in the center of the monitor
+    #    window_width = 300  # Set this to be the width of your window
+    #    window_height = 200  # Set this to be the height of your window
+    #    x = int((monitor_width - window_width) / 2)
+    #    y = int((monitor_height - window_height) / 2)
+    #    root.geometry("{}x{}+{}+{}".format(window_width, window_height, x, y))
+    #
+    #    file_path = filedialog.askopenfilename()
     file_path = "./downloads/Product Mix.csv"
     return file_path
 
 
 def upload_menu_price_analysis():
-#    root = tk.Tk()
-#    root.title("Menu Price Analysis file")
-#    root.withdraw()
-#
-#    # Get the dimensions of the monitor that the window is on
-#    monitor_width = root.winfo_screenwidth()
-#    monitor_height = root.winfo_screenheight()
-#
-#    # Calculate the position of the window's top-left corner to be in the center of the monitor
-#    window_width = 300  # Set this to be the width of your window
-#    window_height = 200  # Set this to be the height of your window
-#    x = int((monitor_width - window_width) / 2)
-#    y = int((monitor_height - window_height) / 2)
-#    root.geometry("{}x{}+{}+{}".format(window_width, window_height, x, y))
-#
-#    # Set the window attributes to disable resizing and to keep the window on top of others
-#    root.resizable(False, False)
-#    root.wm_attributes("-topmost", True)
-#
-#    file_path = filedialog.askopenfilename()
+    #    root = tk.Tk()
+    #    root.title("Menu Price Analysis file")
+    #    root.withdraw()
+    #
+    #    # Get the dimensions of the monitor that the window is on
+    #    monitor_width = root.winfo_screenwidth()
+    #    monitor_height = root.winfo_screenheight()
+    #
+    #    # Calculate the position of the window's top-left corner to be in the center of the monitor
+    #    window_width = 300  # Set this to be the width of your window
+    #    window_height = 200  # Set this to be the height of your window
+    #    x = int((monitor_width - window_width) / 2)
+    #    y = int((monitor_height - window_height) / 2)
+    #    root.geometry("{}x{}+{}+{}".format(window_width, window_height, x, y))
+    #
+    #    # Set the window attributes to disable resizing and to keep the window on top of others
+    #    root.resizable(False, False)
+    #    root.wm_attributes("-topmost", True)
+    #
+    #    file_path = filedialog.askopenfilename()
     file_path = "./downloads/Menu Price Analysis.csv"
     return file_path
 
@@ -119,11 +119,18 @@ def menucatagory(catg, df_menu):
 
 def removeSpecial(df):
     """Removes specialty items from the dataframes"""
-    file = open("./specialty.txt")
-    specialty_list = file.read().split("\n")
-    file.close
-    for item in specialty_list:
-        df = df.drop(df[df.MenuItem == item].index)
+    with open("./specialty.txt") as file:
+        specialty_patterns = file.read().split("\n")
+
+    for pattern in specialty_patterns:
+        df = df.drop(df[df.MenuItem == pattern].index)
+
+    df = df.drop(df[df.MenuItem.str.contains(r"^No ", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r"^Seat ", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r"Allergy$", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r"for Salad.*", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r".*for Steak.*", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r".*for Cali-Club.*", na=False, regex=True)].index)
     return df
 
 
@@ -151,7 +158,11 @@ def main(product_mix_csv, menu_analysis_csv):
         r"CHOPHOUSE\ -\ NOLA", "CHOPHOUSE-NOLA", regex=True
     )
     menu_analysis.loc[:, "Location"] = menu_analysis["Location"].str.replace(r"CAFÉ", "CAFE", regex=True)
+    menu_analysis.loc[:, "MenuItemName"] = menu_analysis["MenuItemName"].str.replace(r"CAFÉ", "CAFE", regex=True)
     menu_analysis.loc[:, "Location"] = menu_analysis["Location"].str.replace(r"^(?:.*?( -)){2}", "-", regex=True)
+    menu_analysis.loc[:, "MenuItemName"] = menu_analysis["MenuItemName"].str.replace(
+        r"^(?:.*?( -)){2}", "-", regex=True
+    )
 
     menu_analysis["Location"] = menu_analysis["Location"].str.strip()
     df_nonetab = pd.DataFrame()
@@ -206,6 +217,7 @@ def main(product_mix_csv, menu_analysis_csv):
 
     # Combine the two imports into one dataframe and clean the data.
     directory = filedialog.askdirectory()
+    print(store_list)
     for store in store_list:
         df_menu = pd.merge(product_dict[store], price_dict[store], on="MenuItem", how="left", sort=False)
         df_menu.rename(columns={"Location_x": "Location"}, inplace=True)
