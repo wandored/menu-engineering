@@ -125,17 +125,42 @@ def removeSpecial(df):
     for pattern in specialty_patterns:
         df = df.drop(df[df.MenuItem == pattern].index)
 
+    with open("./regex_list.txt") as file:
+        regex_patterns = file.read().split("\n")
+
+    # Print the regex patterns and the number of rows in df
+#    print("Regex patterns:", regex_patterns)
+#    print("Number of rows in df:", len(df))
+#    pause = input("Press enter to continue")
+
+#    for pattern in regex_patterns:
+#        print("current pattern:", pattern)
+#        df = df.drop(df[df.MenuItem.str.contains(f'{pattern}', na=False, regex=True)].index)
+#        print("Number of matched rows:", len(df[df.MenuItem.str.contains(f'{pattern}', na=False, regex=True)]))
+
     df = df.drop(df[df.MenuItem.str.contains(r"^No ", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r"^& ", na=False, regex=True)].index)
     df = df.drop(df[df.MenuItem.str.contains(r"^Seat ", na=False, regex=True)].index)
     df = df.drop(df[df.MenuItem.str.contains(r"Allergy$", na=False, regex=True)].index)
     df = df.drop(df[df.MenuItem.str.contains(r"for Salad.*", na=False, regex=True)].index)
     df = df.drop(df[df.MenuItem.str.contains(r".*for Steak.*", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r".*for Sand.*", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r".*for Taco.*", na=False, regex=True)].index)
     df = df.drop(df[df.MenuItem.str.contains(r".*for Cali-Club.*", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r".*for Edge.*", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r".*See Server.*", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r".*Refund.*", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r".*2 Pens.*", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r".*Anniversary.*", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r".*Birthday.*", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r".*Rare.*", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r".*Medium.*", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r".*Well.*", na=False, regex=True)].index)
+
     return df
 
 
 def main(product_mix_csv, menu_analysis_csv):
-    """Main function"""
     sort_unit = sort_by_profit_or_qty()
 
     product_mix = pd.read_csv(product_mix_csv, skiprows=3, sep=",", thousands=",")
@@ -216,8 +241,9 @@ def main(product_mix_csv, menu_analysis_csv):
         price_dict[key] = df_pmix
 
     # Combine the two imports into one dataframe and clean the data.
-    directory = filedialog.askdirectory()
-    print(store_list)
+#    directory = filedialog.askdirectory()
+#    directory = "/home/wandored/Dropbox/Restaurant365/Report_Data/"
+    directory = "/home/wandored/Projects/r365cleaner/output/"
     for store in store_list:
         df_menu = pd.merge(product_dict[store], price_dict[store], on="MenuItem", how="left", sort=False)
         df_menu.rename(columns={"Location_x": "Location"}, inplace=True)

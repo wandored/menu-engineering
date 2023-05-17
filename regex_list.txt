@@ -1,0 +1,41 @@
+.*2 Pens.*
+.*Anniversary.*
+.*Birthday.*
+.*Black & Blue.*
+.*Bowl$
+.*Bowl.*
+.*Bowls$
+.*Broiled.*
+.*Butterfly.*
+.*Candles.*
+.*Char$
+.*Continued.*
+.*Do Not Clean.*
+.*Dont Make-Throw away!.*
+.*Fork.*
+.*Glass$
+.*Glasses$
+.*Medium.*
+.*Plate.*
+.*Projector.*
+.*Rare.*
+.*Refund
+.*See Server.*
+.*Separate.*
+.*Server.*
+.*TO-GO.*
+.*Tax.*
+.*Well.*
+.*for Cali-Club.*
+.*for Salad.*
+.*for Steak.*
+.*for Taco.*
+.*to Platter.*
+Allergy$
+^& 
+^No 
+^Seat 
+.*Oustanding.*
+.*Outstanding.*
+.*Split.*
+.*Spoon.*
