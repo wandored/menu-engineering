@@ -243,7 +243,7 @@ def main(product_mix_csv, menu_analysis_csv):
     # Combine the two imports into one dataframe and clean the data.
 #    directory = filedialog.askdirectory()
 #    directory = "/home/wandored/Dropbox/Restaurant365/Report_Data/"
-    directory = "/home/wandored/Projects/r365cleaner/output/"
+    directory = "/home/wandored/Projects/menu-engineering/output/"
     for store in store_list:
         df_menu = pd.merge(product_dict[store], price_dict[store], on="MenuItem", how="left", sort=False)
         df_menu.rename(columns={"Location_x": "Location"}, inplace=True)
@@ -321,4 +321,4 @@ if __name__ == "__main__":
     menu_price_analysis = upload_menu_price_analysis()
     main(product_mix, menu_price_analysis)
 
-    os.system("cp /home/wandored/Projects/r365cleaner/output/*.xlsx /home/wandored/Dropbox/Restaurant365/Report_Data")
+    os.system("cp /home/wandored/Projects/menu-engineering/output/*.xlsx /home/wandored/Dropbox/Restaurant365/Report_Data")

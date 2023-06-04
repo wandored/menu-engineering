@@ -1,6 +1,40 @@
-*.csv
+# Python
+*.pyc
+*.pyo
+__pycache__/
+
+# Environment
+.env
+
+# Compiled files
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# IDE-specific
+.idea/
+.vscode/
+
+# Generated files
 *.xlsx
+*.csv
 *.html
 *.zip
 output/*
 downloads/*
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
+
