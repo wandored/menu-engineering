@@ -2,73 +2,10 @@
 Import sales mix and export menu engineering report to excel
 """
 
-import csv
+import argparse
 import os
 import pandas as pd
-import tkinter as tk
-from tkinter import filedialog
 import numpy as np
-
-
-def upload_product_mix():
-    #    root = tk.Tk()
-    #    root.title("Product Mix file")
-    #    root.withdraw()
-    #
-    #    # Set the window attributes to disable resizing and to keep the window on top of others
-    #    root.resizable(False, False)
-    #    root.wm_attributes("-topmost", True)
-    #
-    #    # Get the dimensions of the monitor that the window is on
-    #    monitor_width = root.winfo_screenwidth()
-    #    monitor_height = root.winfo_screenheight()
-    #
-    #    # Calculate the position of the window's top-left corner to be in the center of the monitor
-    #    window_width = 300  # Set this to be the width of your window
-    #    window_height = 200  # Set this to be the height of your window
-    #    x = int((monitor_width - window_width) / 2)
-    #    y = int((monitor_height - window_height) / 2)
-    #    root.geometry("{}x{}+{}+{}".format(window_width, window_height, x, y))
-    #
-    #    file_path = filedialog.askopenfilename()
-    file_path = "./downloads/Product Mix.csv"
-    return file_path
-
-
-def upload_menu_price_analysis():
-    #    root = tk.Tk()
-    #    root.title("Menu Price Analysis file")
-    #    root.withdraw()
-    #
-    #    # Get the dimensions of the monitor that the window is on
-    #    monitor_width = root.winfo_screenwidth()
-    #    monitor_height = root.winfo_screenheight()
-    #
-    #    # Calculate the position of the window's top-left corner to be in the center of the monitor
-    #    window_width = 300  # Set this to be the width of your window
-    #    window_height = 200  # Set this to be the height of your window
-    #    x = int((monitor_width - window_width) / 2)
-    #    y = int((monitor_height - window_height) / 2)
-    #    root.geometry("{}x{}+{}+{}".format(window_width, window_height, x, y))
-    #
-    #    # Set the window attributes to disable resizing and to keep the window on top of others
-    #    root.resizable(False, False)
-    #    root.wm_attributes("-topmost", True)
-    #
-    #    file_path = filedialog.askopenfilename()
-    file_path = "./downloads/Menu Price Analysis.csv"
-    return file_path
-
-
-def sort_by_profit_or_qty():
-    root = tk.Tk()
-    root.title("Sort by Profit or Quantity")
-    root.withdraw()
-
-    # Ask user to select "Profit" or "Quantity" in tkinter select window
-    sort_by = tk.simpledialog.askstring("Sort by Profit or Quantity", "Sort by Profit or Quantity", parent=root)
-
-    return sort_by
 
 
 def removedups(x):
@@ -160,8 +97,7 @@ def removeSpecial(df):
     return df
 
 
-def main(product_mix_csv, menu_analysis_csv):
-    sort_unit = sort_by_profit_or_qty()
+def main(product_mix_csv, menu_analysis_csv, sort_unit):
 
     product_mix = pd.read_csv(product_mix_csv, skiprows=3, sep=",", thousands=",")
     product_mix.loc[:, "Textbox27"] = product_mix["Textbox27"].str.replace(
@@ -240,9 +176,6 @@ def main(product_mix_csv, menu_analysis_csv):
         df_pmix["MenuItem"] = df_pmix["MenuItem"].astype(str)
         price_dict[key] = df_pmix
 
-    # Combine the two imports into one dataframe and clean the data.
-#    directory = filedialog.askdirectory()
-#    directory = "/home/wandored/Dropbox/Restaurant365/Report_Data/"
     directory = "/home/wandored/Projects/menu-engineering/output/"
     for store in store_list:
         df_menu = pd.merge(product_dict[store], price_dict[store], on="MenuItem", how="left", sort=False)
@@ -317,8 +250,26 @@ def main(product_mix_csv, menu_analysis_csv):
 
 
 if __name__ == "__main__":
-    product_mix = upload_product_mix()
-    menu_price_analysis = upload_menu_price_analysis()
-    main(product_mix, menu_price_analysis)
+
+    # creat and argument parser object
+    parser = argparse.ArgumentParser()
+
+    # check for user provide argument
+    parser.add_argument("-q", "--quantity", help="Sort results by quantity sold", action="store_true")
+    parser.add_argument("-p", "--profit", help="Sort results by profit", action="store_true")
+    args = parser.parse_args()
+
+    # must have a sort unit
+    if args.profit:
+        sort_unit = 'Profit'
+    elif args.quantity:
+        sort_unit = 'Qty'
+    else:
+        print("No sort unit provided, sort will be by Profit Margin")
+        sort_unit = 'Profit'
+
+    product_mix = "./downloads/Product Mix.csv"
+    menu_price_analysis = "./downloads/Menu Price Analysis.csv"
+    main(product_mix, menu_price_analysis, sort_unit)
 
     os.system("cp /home/wandored/Projects/menu-engineering/output/*.xlsx /home/wandored/Dropbox/Restaurant365/Report_Data")

@@ -2,11 +2,13 @@
 **Tonic Water TO-GO **
 2 Pens
 2oz Dressing
+Add Butterfly
 Add Char
 Add Crispy
 Add Dirty
 Add On
 Add Pineapple
+Add Plain
 Add Plate/Bowl/Utensil
 Add Salt Rim
 Add Sugar Rim
@@ -36,6 +38,7 @@ Crispy
 Crumber
 Cups
 Dirty
+Dirty Olives
 Dirty On Side
 Dirty Rocks
 Do Not Clean
@@ -48,7 +51,9 @@ Extra Crispy
 Extra Dirty
 Extra Dressing
 Extra One Glass
+Extra Plate
 Extra Plate/Bowl/Utensil
+Extra Salt Rim
 Extra Sliced
 Female
 Fork
@@ -96,6 +101,7 @@ None
 Not Hot Plate
 Old School
 On Separate Plate
+On The Side
 On the side Lime Juice
 On the side Rocks
 One Glass
