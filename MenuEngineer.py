@@ -66,39 +66,62 @@ def removeSpecial(df):
         regex_patterns = file.read().split("\n")
 
     # Print the regex patterns and the number of rows in df
-#    print("Regex patterns:", regex_patterns)
-#    print("Number of rows in df:", len(df))
-#    pause = input("Press enter to continue")
+    #    print("Regex patterns:", regex_patterns)
+    #    print("Number of rows in df:", len(df))
+    #    pause = input("Press enter to continue")
 
-#    for pattern in regex_patterns:
-#        print("current pattern:", pattern)
-#        df = df.drop(df[df.MenuItem.str.contains(f'{pattern}', na=False, regex=True)].index)
-#        print("Number of matched rows:", len(df[df.MenuItem.str.contains(f'{pattern}', na=False, regex=True)]))
+    #    for pattern in regex_patterns:
+    #        print("current pattern:", pattern)
+    #        df = df.drop(df[df.MenuItem.str.contains(f'{pattern}', na=False, regex=True)].index)
+    #        print("Number of matched rows:", len(df[df.MenuItem.str.contains(f'{pattern}', na=False, regex=True)]))
 
     df = df.drop(df[df.MenuItem.str.contains(r"^No ", na=False, regex=True)].index)
     df = df.drop(df[df.MenuItem.str.contains(r"^& ", na=False, regex=True)].index)
     df = df.drop(df[df.MenuItem.str.contains(r"^Seat ", na=False, regex=True)].index)
     df = df.drop(df[df.MenuItem.str.contains(r"Allergy$", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r"for Salad.*", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r".*for Steak.*", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r".*for Sand.*", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r".*for Taco.*", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r".*for Cali-Club.*", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r".*for Edge.*", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r".*See Server.*", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r".*Refund.*", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r".*2 Pens.*", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r".*Anniversary.*", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r".*Birthday.*", na=False, regex=True)].index)
+    df = df.drop(
+        df[df.MenuItem.str.contains(r"for Salad.*", na=False, regex=True)].index
+    )
+    df = df.drop(
+        df[df.MenuItem.str.contains(r".*for Steak.*", na=False, regex=True)].index
+    )
+    df = df.drop(
+        df[df.MenuItem.str.contains(r".*for Sand.*", na=False, regex=True)].index
+    )
+    df = df.drop(
+        df[df.MenuItem.str.contains(r".*for Taco.*", na=False, regex=True)].index
+    )
+    df = df.drop(
+        df[df.MenuItem.str.contains(r".*for Cali-Club.*", na=False, regex=True)].index
+    )
+    df = df.drop(
+        df[df.MenuItem.str.contains(r".*for Edge.*", na=False, regex=True)].index
+    )
+    df = df.drop(
+        df[df.MenuItem.str.contains(r".*See Server.*", na=False, regex=True)].index
+    )
+    df = df.drop(
+        df[df.MenuItem.str.contains(r".*Refund.*", na=False, regex=True)].index
+    )
+    df = df.drop(
+        df[df.MenuItem.str.contains(r".*2 Pens.*", na=False, regex=True)].index
+    )
+    df = df.drop(
+        df[df.MenuItem.str.contains(r".*Anniversary.*", na=False, regex=True)].index
+    )
+    df = df.drop(
+        df[df.MenuItem.str.contains(r".*Birthday.*", na=False, regex=True)].index
+    )
     df = df.drop(df[df.MenuItem.str.contains(r".*Rare.*", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r".*Medium.*", na=False, regex=True)].index)
+    df = df.drop(
+        df[df.MenuItem.str.contains(r".*Medium.*", na=False, regex=True)].index
+    )
     df = df.drop(df[df.MenuItem.str.contains(r".*Well.*", na=False, regex=True)].index)
 
     return df
 
 
 def main(product_mix_csv, menu_analysis_csv, sort_unit):
-
     product_mix = pd.read_csv(product_mix_csv, skiprows=3, sep=",", thousands=",")
     product_mix.loc[:, "Textbox27"] = product_mix["Textbox27"].str.replace(
         r"CHOPHOUSE\ -\ NOLA", "CHOPHOUSE-NOLA", regex=True
@@ -106,10 +129,18 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
     product_mix.loc[:, "TransferDate"] = product_mix["TransferDate"].str.replace(
         r"CHOPHOUSE\ -\ NOLA", "CHOPHOUSE-NOLA", regex=True
     )
-    product_mix.loc[:, "Textbox27"] = product_mix["Textbox27"].str.replace(r"CAFÉ", "CAFE", regex=True)
-    product_mix.loc[:, "TransferDate"] = product_mix["TransferDate"].str.replace(r"CAFÉ", "CAFE", regex=True)
-    product_mix.loc[:, "Textbox27"] = product_mix["Textbox27"].str.replace(r"^(?:.*?( -)){2}", "-", regex=True)
-    product_mix.loc[:, "TransferDate"] = product_mix["TransferDate"].str.replace(r"^(?:.*?( -)){2}", "-", regex=True)
+    product_mix.loc[:, "Textbox27"] = product_mix["Textbox27"].str.replace(
+        r"CAFÉ", "CAFE", regex=True
+    )
+    product_mix.loc[:, "TransferDate"] = product_mix["TransferDate"].str.replace(
+        r"CAFÉ", "CAFE", regex=True
+    )
+    product_mix.loc[:, "Textbox27"] = product_mix["Textbox27"].str.replace(
+        r"^(?:.*?( -)){2}", "-", regex=True
+    )
+    product_mix.loc[:, "TransferDate"] = product_mix["TransferDate"].str.replace(
+        r"^(?:.*?( -)){2}", "-", regex=True
+    )
 
     menu_analysis = pd.read_csv(menu_analysis_csv, skiprows=3, sep=",", thousands=",")
     menu_analysis.loc[:, "Location"] = menu_analysis["Location"].str.replace(
@@ -118,9 +149,15 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
     menu_analysis.loc[:, "MenuItemName"] = menu_analysis["MenuItemName"].str.replace(
         r"CHOPHOUSE\ -\ NOLA", "CHOPHOUSE-NOLA", regex=True
     )
-    menu_analysis.loc[:, "Location"] = menu_analysis["Location"].str.replace(r"CAFÉ", "CAFE", regex=True)
-    menu_analysis.loc[:, "MenuItemName"] = menu_analysis["MenuItemName"].str.replace(r"CAFÉ", "CAFE", regex=True)
-    menu_analysis.loc[:, "Location"] = menu_analysis["Location"].str.replace(r"^(?:.*?( -)){2}", "-", regex=True)
+    menu_analysis.loc[:, "Location"] = menu_analysis["Location"].str.replace(
+        r"CAFÉ", "CAFE", regex=True
+    )
+    menu_analysis.loc[:, "MenuItemName"] = menu_analysis["MenuItemName"].str.replace(
+        r"CAFÉ", "CAFE", regex=True
+    )
+    menu_analysis.loc[:, "Location"] = menu_analysis["Location"].str.replace(
+        r"^(?:.*?( -)){2}", "-", regex=True
+    )
     menu_analysis.loc[:, "MenuItemName"] = menu_analysis["MenuItemName"].str.replace(
         r"^(?:.*?( -)){2}", "-", regex=True
     )
@@ -135,9 +172,13 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
     price_dict = {store: make_dataframe1(store, menu_analysis) for store in store_list}
 
     for key in product_dict.keys():
-        product_dict[key][["x", "MenuItem"]] = product_dict[key]["TransferDate"].str.split(" - ", expand=True)
+        product_dict[key][["x", "MenuItem"]] = product_dict[key][
+            "TransferDate"
+        ].str.split(" - ", expand=True)
         # product_dict[key]["Textbox27"].rename("Location", inplace=True)
-        product_dict[key].rename(columns={"Cost": "Price", "Total": "Sales"}, inplace=True)
+        product_dict[key].rename(
+            columns={"Cost": "Price", "Total": "Sales"}, inplace=True
+        )
         product_dict[key].drop(
             columns={
                 "Textbox3",
@@ -169,7 +210,9 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
     for key in price_dict.keys():
         price_dict[key].rename(columns={"Cost1": "Cost"}, inplace=True)
         try:
-            price_dict[key][["X", "MenuItem"]] = price_dict[key]["MenuItemName"].str.split(" - ", expand=True)
+            price_dict[key][["X", "MenuItem"]] = price_dict[key][
+                "MenuItemName"
+            ].str.split(" - ", expand=True)
         except:
             print(f'{price_dict[key]["MenuItemName"]} "key error"')
         df_pmix = price_dict[key].reindex(columns=["Location", "MenuItem", "Cost"])
@@ -178,7 +221,13 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
 
     directory = "/home/wandored/Projects/menu-engineering/output/"
     for store in store_list:
-        df_menu = pd.merge(product_dict[store], price_dict[store], on="MenuItem", how="left", sort=False)
+        df_menu = pd.merge(
+            product_dict[store],
+            price_dict[store],
+            on="MenuItem",
+            how="left",
+            sort=False,
+        )
         df_menu.rename(columns={"Location_x": "Location"}, inplace=True)
         df_pmix = df_menu.reindex(
             columns=[
@@ -200,7 +249,9 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
         cat2_list = df_menu["Cat2"]
         cat2_list = removedups(cat2_list)
         df_menu["Cost"].fillna(0, inplace=True)
-        df_menu["Cost %"] = df_menu.apply(lambda row: row.Cost / row.Price if row.Price else 0, axis=1)
+        df_menu["Cost %"] = df_menu.apply(
+            lambda row: row.Cost / row.Price if row.Price else 0, axis=1
+        )
         df_menu["Margin"] = df_menu.apply(lambda row: row.Price - row.Cost, axis=1)
         df_menu["Total Cost"] = df_menu.apply(lambda row: row.Qty * row.Cost, axis=1)
         df_menu["Profit"] = df_menu.apply(lambda row: row.Qty * row.Margin, axis=1)
@@ -226,16 +277,27 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
         if not df_none.empty:
             df_nonetab = pd.concat([df_nonetab, df_none])
 
-        with pd.ExcelWriter(f"{directory}/{store}.xlsx") as writer:  # pylint: disable=abstract-class-instantiated
+        with pd.ExcelWriter(
+            f"{directory}/{store}.xlsx"
+        ) as writer:  # pylint: disable=abstract-class-instantiated
             for cat in cat2_list:
                 df = menucatagory(cat, df_menu)
                 df = engineer(df)
                 df["rating"] = df.apply(rating, axis=1)
-                df.sort_values(by=["Profit", "Qty"], inplace=True, ascending=False, ignore_index=True)
+                df.sort_values(
+                    by=["Profit", "Qty"],
+                    inplace=True,
+                    ascending=False,
+                    ignore_index=True,
+                )
                 df.drop(columns={"Location", "Cat3", "qty_mn", "mrg_mn"}, inplace=True)
-                df.loc["Total"] = pd.Series(df[["Qty", "Sales", "Total Cost", "Profit"]].sum())
+                df.loc["Total"] = pd.Series(
+                    df[["Qty", "Sales", "Total Cost", "Profit"]].sum()
+                )
                 if df.at["Total", "Sales"]:
-                    df.at["Total", "Cost %"] = df.at["Total", "Total Cost"] / df.at["Total", "Sales"]
+                    df.at["Total", "Cost %"] = (
+                        df.at["Total", "Total Cost"] / df.at["Total", "Sales"]
+                    )
                 else:
                     df.at["Total", "Cost %"] = 1
                 df.to_excel(writer, sheet_name=cat, index=False)
@@ -250,26 +312,31 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
 
 
 if __name__ == "__main__":
-
     # creat and argument parser object
     parser = argparse.ArgumentParser()
 
     # check for user provide argument
-    parser.add_argument("-q", "--quantity", help="Sort results by quantity sold", action="store_true")
-    parser.add_argument("-p", "--profit", help="Sort results by profit", action="store_true")
+    parser.add_argument(
+        "-q", "--quantity", help="Sort results by quantity sold", action="store_true"
+    )
+    parser.add_argument(
+        "-p", "--profit", help="Sort results by profit", action="store_true"
+    )
     args = parser.parse_args()
 
     # must have a sort unit
     if args.profit:
-        sort_unit = 'Profit'
+        sort_unit = "Profit"
     elif args.quantity:
-        sort_unit = 'Qty'
+        sort_unit = "Qty"
     else:
         print("No sort unit provided, sort will be by Profit Margin")
-        sort_unit = 'Profit'
+        sort_unit = "Profit"
 
     product_mix = "./downloads/Product Mix.csv"
     menu_price_analysis = "./downloads/Menu Price Analysis.csv"
     main(product_mix, menu_price_analysis, sort_unit)
 
-    os.system("cp /home/wandored/Projects/menu-engineering/output/*.xlsx /home/wandored/Dropbox/Restaurant365/Report_Data")
+    os.system(
+        "cp /home/wandored/Projects/menu-engineering/output/*.xlsx /home/wandored/Dropbox/Restaurant365/Report_Data"
+    )

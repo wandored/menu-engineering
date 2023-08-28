@@ -27,18 +27,28 @@ def main():
     )
 
     # remove the prefix from r365_menu_items Name column
-    r365_menu_items["Name"] = r365_menu_items["Name"].str.replace("Casual - ", "").str.replace("Steakhouse - ", "")
+    r365_menu_items["Name"] = (
+        r365_menu_items["Name"]
+        .str.replace("Casual - ", "")
+        .str.replace("Steakhouse - ", "")
+    )
 
     # remove rows with any value in Category1, Category2 or Category3 columns from r365_menu_items
-    r365_menu_items = r365_menu_items[r365_menu_items[["Category1", "Category2", "Category3"]].isnull().all(axis=1)]
+    r365_menu_items = r365_menu_items[
+        r365_menu_items[["Category1", "Category2", "Category3"]].isnull().all(axis=1)
+    ]
 
     # compare the Name columns in both files and drop rows from MenuItem_Export that are not in r365_menu_items
-    new_menu_items = menu_item_export[menu_item_export["Name"].isin(r365_menu_items["Name"])]
+    new_menu_items = menu_item_export[
+        menu_item_export["Name"].isin(r365_menu_items["Name"])
+    ]
     # sort the new file by Name
     new_menu_items = new_menu_items.sort_values(by=["Name", "Created Date"])
     # remove duplicates from the new file
     new_menu_items = new_menu_items.drop_duplicates("Name")
-    new_menu_items = new_menu_items[~new_menu_items["Name"].isin(pd.read_csv("./specialty.txt", header=None)[0])]
+    new_menu_items = new_menu_items[
+        ~new_menu_items["Name"].isin(pd.read_csv("./specialty.txt", header=None)[0])
+    ]
     # drop all rows where the Created Date column is before 2023-03-21
     open_items = menu_item_export[menu_item_export["Created Date"] > "2023-03-21"]
     # compare the Name columns in both files and drop rows from r365_menu_items that are not in MenuItem_Export
@@ -60,7 +70,9 @@ def main():
     new_menu_items = new_menu_items[~new_menu_items["Name"].str.endswith("for Steak")]
     new_menu_items = new_menu_items[~new_menu_items["Name"].str.endswith("for Sand")]
     new_menu_items = new_menu_items[~new_menu_items["Name"].str.endswith("for Taco")]
-    new_menu_items = new_menu_items[~new_menu_items["Name"].str.endswith("for Cali-Club")]
+    new_menu_items = new_menu_items[
+        ~new_menu_items["Name"].str.endswith("for Cali-Club")
+    ]
     new_menu_items = new_menu_items[~new_menu_items["Name"].str.endswith("for Edge")]
 
     # write the new file to a csv file
