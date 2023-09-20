@@ -225,7 +225,9 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
                 "Cat2": "No Charge",
                 "Cat3": "None",
             }
-            df_pmix = df_pmix.append(new_row, ignore_index=True)
+            df_pmix = pd.concat(
+                [df_pmix, pd.DataFrame(new_row, index=[0])], ignore_index=True
+            )
 
         product_dict[key] = df_pmix
 
@@ -242,55 +244,66 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
         df_pmix["MenuItem"] = df_pmix["MenuItem"].astype(str)
 
         if df_pmix.iloc[0, 0] == "CHOPHOUSE-NOLA":
-            df_pmix = df_pmix.append(
+            new_row = pd.DataFrame(
                 {
                     "Location": "CHOPHOUSE-NOLA",
                     "MenuItem": "Bread Basket",
                     "Cost": 1.33,
                 },
-                ignore_index=True,
+                index=[0],
             )
+            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
+
         if df_pmix.iloc[0, 0] == "CHOPHOUSE '47":
-            df_pmix = df_pmix.append(
+            new_row = pd.DataFrame(
                 {"Location": "CHOPHOUSE '47", "MenuItem": "Bread Basket", "Cost": 1.33},
-                ignore_index=True,
+                index=[0],
             )
+            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
+
         if df_pmix.iloc[0, 0] == "GULFSTREAM CAFE":
-            df_pmix = df_pmix.append(
+            new_row = pd.DataFrame(
                 {
                     "Location": "GULFSTREAM CAFE",
                     "MenuItem": "Bread Basket",
                     "Cost": 0.85,
                 },
-                ignore_index=True,
+                index=[0],
             )
+            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
+
         if df_pmix.iloc[0, 0] == "NEW YORK PRIME-MYRTLE BEACH":
-            df_pmix = df_pmix.append(
+            new_row = pd.DataFrame(
                 {
                     "Location": "NEW YORK PRIME-MYRTLE BEACH",
                     "MenuItem": "Bread Basket",
                     "Cost": 1.09,
                 },
-                ignore_index=True,
+                index=[0],
             )
+            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
+
         if df_pmix.iloc[0, 0] == "NEW YORK PRIME-BOCA":
-            df_pmix = df_pmix.append(
+            new_row = pd.DataFrame(
                 {
                     "Location": "NEW YORK PRIME-BOCA",
                     "MenuItem": "Bread Basket",
                     "Cost": 1.48,
                 },
-                ignore_index=True,
+                index=[0],
             )
+            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
+
         if df_pmix.iloc[0, 0] == "NEW YORK PRIME-ATLANTA":
-            df_pmix = df_pmix.append(
+            new_row = pd.DataFrame(
                 {
                     "Location": "NEW YORK PRIME-ATLANTA",
                     "MenuItem": "Bread Basket",
                     "Cost": 1.48,
                 },
-                ignore_index=True,
+                index=[0],
             )
+            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
 
         price_dict[key] = df_pmix
 
