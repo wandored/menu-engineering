@@ -107,6 +107,7 @@ On the side Lime Juice
 On the side Rocks
 One Glass
 One Glass Neat
+One Platter
 Orange
 Orange Juice
 Orange Peel
@@ -164,10 +165,12 @@ Sugar Rim
 Sweet
 Tall
 Test
+Three Platters
 Tip
 Toasted On Side
 Tonic
 Tonic Water
+Two Platters
 Unsweet
 Very Dirty
 Very Dirty

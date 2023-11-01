@@ -121,20 +121,29 @@ def removeSpecial(df):
     return df
 
 
+# used for adding bread basket to menu engineering
+def add_new_row(location, menu_item, cost, df):
+    new_row = pd.DataFrame(
+        {"Location": location, "MenuItem": menu_item, "Cost": cost},
+        index=[0],
+    )
+    return pd.concat([df, new_row], ignore_index=True)
+
+
 def main(product_mix_csv, menu_analysis_csv, sort_unit):
     product_mix = pd.read_csv(product_mix_csv, skiprows=3, sep=",", thousands=",")
     product_mix.loc[:, "Textbox27"] = product_mix["Textbox27"].str.replace(
         r"CHOPHOUSE\ -\ NOLA", "CHOPHOUSE-NOLA", regex=True
     )
-    product_mix.loc[:, "TransferDate"] = product_mix["TransferDate"].str.replace(
-        r"CHOPHOUSE\ -\ NOLA", "CHOPHOUSE-NOLA", regex=True
-    )
+#    product_mix.loc[:, "TransferDate"] = product_mix["TransferDate"].str.replace(
+#        r"CHOPHOUSE\ -\ NOLA", "CHOPHOUSE-NOLA", regex=True
+#    )
     product_mix.loc[:, "Textbox27"] = product_mix["Textbox27"].str.replace(
         r"CAFÉ", "CAFE", regex=True
     )
-    product_mix.loc[:, "TransferDate"] = product_mix["TransferDate"].str.replace(
-        r"CAFÉ", "CAFE", regex=True
-    )
+#    product_mix.loc[:, "TransferDate"] = product_mix["TransferDate"].str.replace(
+#        r"CAFÉ", "CAFE", regex=True
+#    )
     product_mix.loc[:, "Textbox27"] = product_mix["Textbox27"].str.replace(
         r"^(?:.*?( -)){2}", "-", regex=True
     )
@@ -146,15 +155,15 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
     menu_analysis.loc[:, "Location"] = menu_analysis["Location"].str.replace(
         r"CHOPHOUSE\ -\ NOLA", "CHOPHOUSE-NOLA", regex=True
     )
-    menu_analysis.loc[:, "MenuItemName"] = menu_analysis["MenuItemName"].str.replace(
-        r"CHOPHOUSE\ -\ NOLA", "CHOPHOUSE-NOLA", regex=True
-    )
+#    menu_analysis.loc[:, "MenuItemName"] = menu_analysis["MenuItemName"].str.replace(
+#        r"CHOPHOUSE\ -\ NOLA", "CHOPHOUSE-NOLA", regex=True
+#    )
     menu_analysis.loc[:, "Location"] = menu_analysis["Location"].str.replace(
         r"CAFÉ", "CAFE", regex=True
     )
-    menu_analysis.loc[:, "MenuItemName"] = menu_analysis["MenuItemName"].str.replace(
-        r"CAFÉ", "CAFE", regex=True
-    )
+#    menu_analysis.loc[:, "MenuItemName"] = menu_analysis["MenuItemName"].str.replace(
+#        r"CAFÉ", "CAFE", regex=True
+#    )
     menu_analysis.loc[:, "Location"] = menu_analysis["Location"].str.replace(
         r"^(?:.*?( -)){2}", "-", regex=True
     )
@@ -243,67 +252,86 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
         df_pmix = price_dict[key].reindex(columns=["Location", "MenuItem", "Cost"])
         df_pmix["MenuItem"] = df_pmix["MenuItem"].astype(str)
 
-        if df_pmix.iloc[0, 0] == "CHOPHOUSE-NOLA":
-            new_row = pd.DataFrame(
-                {
-                    "Location": "CHOPHOUSE-NOLA",
-                    "MenuItem": "Bread Basket",
-                    "Cost": 1.33,
-                },
-                index=[0],
-            )
-            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
+        location = df_pmix.iloc[0, 0]
 
-        if df_pmix.iloc[0, 0] == "CHOPHOUSE '47":
-            new_row = pd.DataFrame(
-                {"Location": "CHOPHOUSE '47", "MenuItem": "Bread Basket", "Cost": 1.33},
-                index=[0],
-            )
-            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
+# Define a dictionary to map location names to their respective data.
+        location_data = {
+            "CHOPHOUSE-NOLA": ("Bread Basket", 1.33),
+            "CHOPHOUSE '47": ("Bread Basket", 1.33),
+            "GULFSTREAM CAFE": ("Bread Basket", 0.85),
+            "NEW YORK PRIME-MYRTLE BEACH": ("Bread Basket", 1.09),
+            "NEW YORK PRIME-BOCA": ("Bread Basket", 1.48),
+            "NEW YORK PRIME-ATLANTA": ("Bread Basket", 1.48),
+        }
 
-        if df_pmix.iloc[0, 0] == "GULFSTREAM CAFE":
-            new_row = pd.DataFrame(
-                {
-                    "Location": "GULFSTREAM CAFE",
-                    "MenuItem": "Bread Basket",
-                    "Cost": 0.85,
-                },
-                index=[0],
-            )
-            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
+# Check if the location exists in the dictionary, then add the new row.
+        if location in location_data:
+            menu_item, cost = location_data[location]
+            df_pmix = add_new_row(location, menu_item, cost, df_pmix)
 
-        if df_pmix.iloc[0, 0] == "NEW YORK PRIME-MYRTLE BEACH":
-            new_row = pd.DataFrame(
-                {
-                    "Location": "NEW YORK PRIME-MYRTLE BEACH",
-                    "MenuItem": "Bread Basket",
-                    "Cost": 1.09,
-                },
-                index=[0],
-            )
-            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
 
-        if df_pmix.iloc[0, 0] == "NEW YORK PRIME-BOCA":
-            new_row = pd.DataFrame(
-                {
-                    "Location": "NEW YORK PRIME-BOCA",
-                    "MenuItem": "Bread Basket",
-                    "Cost": 1.48,
-                },
-                index=[0],
-            )
-            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
 
-        if df_pmix.iloc[0, 0] == "NEW YORK PRIME-ATLANTA":
-            new_row = pd.DataFrame(
-                {
-                    "Location": "NEW YORK PRIME-ATLANTA",
-                    "MenuItem": "Bread Basket",
-                    "Cost": 1.48,
-                },
-                index=[0],
-            )
-            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
+#        if df_pmix.iloc[0, 0] == "CHOPHOUSE-NOLA":
+#            new_row = pd.DataFrame(
+#                {
+#                    "Location": "CHOPHOUSE-NOLA",
+#                    "MenuItem": "Bread Basket",
+#                    "Cost": 1.33,
+#                },
+#                index=[0],
+#            )
+#            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
+#
+#        if df_pmix.iloc[0, 0] == "CHOPHOUSE '47":
+#            new_row = pd.DataFrame(
+#                {"Location": "CHOPHOUSE '47", "MenuItem": "Bread Basket", "Cost": 1.33},
+#                index=[0],
+#            )
+#            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
+#
+#        if df_pmix.iloc[0, 0] == "GULFSTREAM CAFE":
+#            new_row = pd.DataFrame(
+#                {
+#                    "Location": "GULFSTREAM CAFE",
+#                    "MenuItem": "Bread Basket",
+#                    "Cost": 0.85,
+#                },
+#                index=[0],
+#            )
+#            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
+#
+#        if df_pmix.iloc[0, 0] == "NEW YORK PRIME-MYRTLE BEACH":
+#            new_row = pd.DataFrame(
+#                {
+#                    "Location": "NEW YORK PRIME-MYRTLE BEACH",
+#                    "MenuItem": "Bread Basket",
+#                    "Cost": 1.09,
+#                },
+#                index=[0],
+#            )
+#            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
+#
+#        if df_pmix.iloc[0, 0] == "NEW YORK PRIME-BOCA":
+#            new_row = pd.DataFrame(
+#                {
+#                    "Location": "NEW YORK PRIME-BOCA",
+#                    "MenuItem": "Bread Basket",
+#                    "Cost": 1.48,
+#                },
+#                index=[0],
+#            )
+#            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
+#
+#        if df_pmix.iloc[0, 0] == "NEW YORK PRIME-ATLANTA":
+#            new_row = pd.DataFrame(
+#                {
+#                    "Location": "NEW YORK PRIME-ATLANTA",
+#                    "MenuItem": "Bread Basket",
+#                    "Cost": 1.48,
+#                },
+#                index=[0],
+#            )
+#            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
 
         price_dict[key] = df_pmix
 
