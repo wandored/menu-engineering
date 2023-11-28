@@ -95,9 +95,7 @@ df_pmix = df_MenuEng.reindex(
 df_MenuEng = df_pmix.drop(df_pmix[df_pmix.MenuItem != menu_item].index)
 df_MenuEng.drop_duplicates(subset=["Location"], keep="last", inplace=True)
 
-with pd.ExcelWriter(
-    f"./output/{menu_item}.xlsx"
-) as writer:  # pylint: disable=abstract-class-instantiated
+with pd.ExcelWriter(f"./output/{menu_item}.xlsx") as writer:  # pylint: disable=abstract-class-instantiated
     df_MenuEng.sort_values(by="Qty", inplace=True, ascending=False, ignore_index=True)
     df_MenuEng.to_excel(writer, sheet_name=menu_item, index=False)
 

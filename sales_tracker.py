@@ -5,18 +5,19 @@ import csv
 import os
 import pandas as pd
 
-menu_item =['ADD CRAB CAKE',
-            'CRAB CAKE',
-            'ADD LOBSTER TAIL',
-            'CRAB CAKES',
-            'FILET OSCAR',
-            'FILET+CRABCAKE',
-            'FILET+LOBSTER TAIL',
-            'FILETS+CRABCAKE',
-            'FILETS+LOBSTER TAIL',
-            'DATE NIGHT',
-            'ULTIMATE DATE NIGHT'
-            ]
+menu_item = [
+    "ADD CRAB CAKE",
+    "CRAB CAKE",
+    "ADD LOBSTER TAIL",
+    "CRAB CAKES",
+    "FILET OSCAR",
+    "FILET+CRABCAKE",
+    "FILET+LOBSTER TAIL",
+    "FILETS+CRABCAKE",
+    "FILETS+LOBSTER TAIL",
+    "DATE NIGHT",
+    "ULTIMATE DATE NIGHT",
+]
 
 df_product = pd.DataFrame()
 df_cost = pd.DataFrame()
@@ -69,13 +70,13 @@ df_product = df_product.reindex(
 )
 
 # Menu Price Analysis used for food cost info.
-#df_cost = pd.read_csv(
+# df_cost = pd.read_csv(
 #    "./downloads/Menu Price Analysis.csv", skiprows=3, sep=",", thousands=","
-#)
-#df_cost[["Location", "MenuItem"]] = df_cost["MenuItemName"].str.split(
+# )
+# df_cost[["Location", "MenuItem"]] = df_cost["MenuItemName"].str.split(
 #    " - ", expand=True
-#)
-#df_cost.drop(
+# )
+# df_cost.drop(
 #    columns={
 #        "MenuItemName",
 #        "Cost1",
@@ -92,16 +93,16 @@ df_product = df_product.reindex(
 #        "PriceNeeded",
 #    },
 #    inplace=True,
-#)
-#df_pmix = df_cost.reindex(columns=["Location", "MenuItem", "Cost", "AvgPrice"])
+# )
+# df_pmix = df_cost.reindex(columns=["Location", "MenuItem", "Cost", "AvgPrice"])
 #
 ## Combine the two imports into one dataframe and clean the data.
 df_product = df_product.drop(df_product[~df_product.MenuItem.isin(menu_item)].index)
-#df_pmix = df_pmix.drop(df_pmix[~df_pmix.MenuItem.isin(menu_item)].index)
-#df_MenuEng = pd.merge(df_pmix, df_product, on="MenuItem", how="left", sort=False)
-#df_MenuEng.rename(columns={"Location_x": "Location"}, inplace=True)
-#df_MenuEng.drop(columns={"Location_y", "AvgPrice"}, inplace=True)
-#df_pmix = df_MenuEng.reindex(
+# df_pmix = df_pmix.drop(df_pmix[~df_pmix.MenuItem.isin(menu_item)].index)
+# df_MenuEng = pd.merge(df_pmix, df_product, on="MenuItem", how="left", sort=False)
+# df_MenuEng.rename(columns={"Location_x": "Location"}, inplace=True)
+# df_MenuEng.drop(columns={"Location_y", "AvgPrice"}, inplace=True)
+# df_pmix = df_MenuEng.reindex(
 #    columns=[
 #        "Location",
 #        "MenuItem",
@@ -113,14 +114,12 @@ df_product = df_product.drop(df_product[~df_product.MenuItem.isin(menu_item)].in
 #        "Cat2",
 #        "Cat3",
 #    ]
-#)
-#df_MenuEng = df_pmix.drop(df_pmix[~df_pmix.MenuItem.isin(menu_item)].index)
-#df = df_MenuEng.groupby(["Location", "MenuItem"]).agg({"Qty": "sum", "Sales": "sum"})
-#df_MenuEng.drop_duplicates(subset=["Location"], keep="last", inplace=True)
+# )
+# df_MenuEng = df_pmix.drop(df_pmix[~df_pmix.MenuItem.isin(menu_item)].index)
+# df = df_MenuEng.groupby(["Location", "MenuItem"]).agg({"Qty": "sum", "Sales": "sum"})
+# df_MenuEng.drop_duplicates(subset=["Location"], keep="last", inplace=True)
 
-with pd.ExcelWriter(
-    f"./output/sales_track.xlsx"
-) as writer:  # pylint: disable=abstract-class-instantiated
+with pd.ExcelWriter("./output/sales_track.xlsx") as writer:  # pylint: disable=abstract-class-instantiated
     df_product.to_excel(writer, index=False)
 
 print(df_product)

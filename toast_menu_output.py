@@ -214,9 +214,7 @@ for store in store_list:
     if not df_none.empty:
         df_nonetab = pd.concat([df_nonetab, df_none])
 
-    with pd.ExcelWriter(
-        f"./output/toast/{store}.xlsx"
-    ) as writer:  # pylint: disable=abstract-class-instantiated
+    with pd.ExcelWriter(f"./output/toast/{store}.xlsx") as writer:  # pylint: disable=abstract-class-instantiated
         for cat in cat2_list:
             df = menucatagory(cat)
             df = engineer(df)
@@ -235,4 +233,3 @@ for store in store_list:
             else:
                 df.at["Total", "Cost %"] = 1
             df.to_excel(writer, sheet_name=cat, index=False)
-

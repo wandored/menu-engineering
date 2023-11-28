@@ -1,6 +1,4 @@
-import csv
 import pandas as pd
-import numpy as np
 
 cat_list = ["Star", "Opportunity", "Puzzle", "Dog"]
 df = pd.read_csv(
