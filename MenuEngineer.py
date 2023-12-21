@@ -4,8 +4,11 @@ Import sales mix and export menu engineering report to excel
 
 import argparse
 import os
-import pandas as pd
+
 import numpy as np
+import openpyxl
+import pandas as pd
+from openpyxl.styles import NamedStyle
 
 
 def removedups(x):
@@ -62,8 +65,8 @@ def removeSpecial(df):
     for pattern in specialty_patterns:
         df = df.drop(df[df.MenuItem == pattern].index)
 
-    with open("./regex_list.txt") as file:
-        regex_patterns = file.read().split("\n")
+    # with open("./regex_list.txt") as file:
+    #     regex_patterns = file.read().split("\n")
 
     # Print the regex patterns and the number of rows in df
     #    print("Regex patterns:", regex_patterns)
@@ -128,6 +131,36 @@ def add_new_row(location, menu_item, cost, df):
         index=[0],
     )
     return pd.concat([df, new_row], ignore_index=True)
+
+
+def format_excel(file_path):
+    wb= openpyxl.load_workbook(file_path)
+    
+    for sheet_name in wb.sheetnames:
+        sheet = wb[sheet_name]
+        
+        if "currency" not in wb.named_styles:
+            currency_style = NamedStyle(name='currency', number_format='#,##0.00')
+            for col in ['C', 'D', 'E', 'F', 'G', 'H', 'I']:
+                for cell in sheet[col]:
+                    cell.style = currency_style
+
+            for cell in sheet['F']:
+                cell.number_format = '0.0%'
+
+            for col in sheet.columns:
+                max_length = 0
+                column = col[0].column_letter
+                for cell in col:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2) * 1.2
+                sheet.column_dimensions[column].width = adjusted_width
+
+    wb.save(file_path)
 
 
 def main(product_mix_csv, menu_analysis_csv, sort_unit):
@@ -268,69 +301,6 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
         if location in location_data:
             menu_item, cost = location_data[location]
             df_pmix = add_new_row(location, menu_item, cost, df_pmix)
-
-        #        if df_pmix.iloc[0, 0] == "CHOPHOUSE-NOLA":
-        #            new_row = pd.DataFrame(
-        #                {
-        #                    "Location": "CHOPHOUSE-NOLA",
-        #                    "MenuItem": "Bread Basket",
-        #                    "Cost": 1.33,
-        #                },
-        #                index=[0],
-        #            )
-        #            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
-        #
-        #        if df_pmix.iloc[0, 0] == "CHOPHOUSE '47":
-        #            new_row = pd.DataFrame(
-        #                {"Location": "CHOPHOUSE '47", "MenuItem": "Bread Basket", "Cost": 1.33},
-        #                index=[0],
-        #            )
-        #            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
-        #
-        #        if df_pmix.iloc[0, 0] == "GULFSTREAM CAFE":
-        #            new_row = pd.DataFrame(
-        #                {
-        #                    "Location": "GULFSTREAM CAFE",
-        #                    "MenuItem": "Bread Basket",
-        #                    "Cost": 0.85,
-        #                },
-        #                index=[0],
-        #            )
-        #            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
-        #
-        #        if df_pmix.iloc[0, 0] == "NEW YORK PRIME-MYRTLE BEACH":
-        #            new_row = pd.DataFrame(
-        #                {
-        #                    "Location": "NEW YORK PRIME-MYRTLE BEACH",
-        #                    "MenuItem": "Bread Basket",
-        #                    "Cost": 1.09,
-        #                },
-        #                index=[0],
-        #            )
-        #            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
-        #
-        #        if df_pmix.iloc[0, 0] == "NEW YORK PRIME-BOCA":
-        #            new_row = pd.DataFrame(
-        #                {
-        #                    "Location": "NEW YORK PRIME-BOCA",
-        #                    "MenuItem": "Bread Basket",
-        #                    "Cost": 1.48,
-        #                },
-        #                index=[0],
-        #            )
-        #            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
-        #
-        #        if df_pmix.iloc[0, 0] == "NEW YORK PRIME-ATLANTA":
-        #            new_row = pd.DataFrame(
-        #                {
-        #                    "Location": "NEW YORK PRIME-ATLANTA",
-        #                    "MenuItem": "Bread Basket",
-        #                    "Cost": 1.48,
-        #                },
-        #                index=[0],
-        #            )
-        #            df_pmix = pd.concat([df_pmix, new_row], ignore_index=True)
-
         price_dict[key] = df_pmix
 
     directory = "/home/wandored/Projects/menu-engineering/output/"
@@ -411,6 +381,12 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
                 else:
                     df.at["Total", "Cost %"] = 1
                 df.to_excel(writer, sheet_name=cat, index=False)
+
+    # Format excel files
+    # excel_files = [file for file in os.listdir(directory) if file.endswith(".xlsx")]
+    # for file in excel_files:
+    #     file_path = os.path.join(directory, file)
+    #     format_excel(file_path)
 
     df_nonetab = df_nonetab.groupby(["MenuItem"]).sum(numeric_only=True)
     df_nonetab.sort_values(by=sort_unit, inplace=True, ascending=False)

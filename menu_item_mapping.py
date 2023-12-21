@@ -4,8 +4,9 @@ compare the "Name" column in both files
 drop all items from the MenuItem_Export.csv that are not in the menu_items_export_r365.csv
 print the new file to a new csv file
 """
-import pandas as pd
 import os
+
+import pandas as pd
 
 
 def main():
