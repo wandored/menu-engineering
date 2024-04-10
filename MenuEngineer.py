@@ -79,6 +79,7 @@ def removeSpecial(df):
     #        print("Number of matched rows:", len(df[df.MenuItem.str.contains(f'{pattern}', na=False, regex=True)]))
 
     df = df.drop(df[df.MenuItem.str.contains(r"^No ", na=False, regex=True)].index)
+    df = df.drop(df[df.MenuItem.str.contains(r" Only$", na=False, regex=True)].index)
     df = df.drop(df[df.MenuItem.str.contains(r"^& ", na=False, regex=True)].index)
     df = df.drop(df[df.MenuItem.str.contains(r"^Seat ", na=False, regex=True)].index)
     df = df.drop(df[df.MenuItem.str.contains(r"Allergy$", na=False, regex=True)].index)
@@ -155,7 +156,8 @@ def format_excel(file_path):
                     try:
                         if len(str(cell.value)) > max_length:
                             max_length = len(cell.value)
-                    except:
+                    except Exception as e:
+                        print(repr(e))
                         pass
                 adjusted_width = (max_length + 2) * 1.2
                 sheet.column_dimensions[column].width = adjusted_width
@@ -206,8 +208,8 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
 
     menu_analysis["Location"] = menu_analysis["Location"].str.strip()
     df_nonetab = pd.DataFrame()
-    store_list = product_mix["Textbox27"]
-    store_list = removedups(store_list)
+    store_list = product_mix["Textbox27"].unique()
+    # store_list = removedups(store_list)
 
     # Make dictionary of dataframes for each location
     product_dict = {store: make_dataframe(store, product_mix) for store in store_list}
@@ -275,13 +277,15 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
 
     # Menu Price Analysis used for food cost info.
     for key in price_dict.keys():
-        price_dict[key].rename(columns={"Cost1": "Cost"}, inplace=True)
+        price_dict[key].rename(columns={"UnitCost_Loc": "Cost"}, inplace=True)
         try:
             price_dict[key][["X", "MenuItem"]] = price_dict[key][
                 "MenuItemName"
             ].str.split(" - ", expand=True)
-        except:
+        except KeyError:
             print(f'{price_dict[key]["MenuItemName"]} "key error"')
+        except Exception as e:
+            print(repr(e))
         df_pmix = price_dict[key].reindex(columns=["Location", "MenuItem", "Cost"])
         df_pmix["MenuItem"] = df_pmix["MenuItem"].astype(str)
 
