@@ -19,6 +19,7 @@ Big Rock Ice
 Birthday
 Birthday On Side
 Black & Blue
+Bordeaux
 Bordeaux Glass
 Bowl
 Bowls
@@ -26,6 +27,7 @@ Broiled
 Butterfly
 Candles
 Char
+Chardonnay
 Chilled
 Chilled Neat
 Chopped
@@ -38,6 +40,8 @@ Creamy
 Crispy
 Crumber
 Cups
+Dessert
+Dessert Wine
 Dirty
 Dirty Olives
 Dirty On Side
@@ -117,6 +121,7 @@ Peach
 Penny
 Perfect
 Pineapple
+Pinot Noir
 Plain
 Plain On Side
 Plate
@@ -128,6 +133,7 @@ Rare
 Rare Plus
 Rocks
 Rocks On Side
+Salad
 Sales Tax
 Salt Rim
 Salt Rim Neat
@@ -158,6 +164,7 @@ Splash Water
 Split
 Spoon
 Spoons
+Steak
 Steamed
 Stem Glass
 Stone Crab

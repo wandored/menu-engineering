@@ -135,19 +135,19 @@ def add_new_row(location, menu_item, cost, df):
 
 
 def format_excel(file_path):
-    wb= openpyxl.load_workbook(file_path)
-    
+    wb = openpyxl.load_workbook(file_path)
+
     for sheet_name in wb.sheetnames:
         sheet = wb[sheet_name]
-        
+
         if "currency" not in wb.named_styles:
-            currency_style = NamedStyle(name='currency', number_format='#,##0.00')
-            for col in ['C', 'D', 'E', 'F', 'G', 'H', 'I']:
+            currency_style = NamedStyle(name="currency", number_format="#,##0.00")
+            for col in ["C", "D", "E", "F", "G", "H", "I"]:
                 for cell in sheet[col]:
                     cell.style = currency_style
 
-            for cell in sheet['F']:
-                cell.number_format = '0.0%'
+            for cell in sheet["F"]:
+                cell.number_format = "0.0%"
 
             for col in sheet.columns:
                 max_length = 0
@@ -261,7 +261,7 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
         if product_dict[key].iloc[0, 0] in stores_w_bread:
             # add bread basket to df_menu
             new_row = {
-                "MenuItem": "Bread Basket",
+                "MenuItem": "Bread Basket per Entree",
                 "Qty": entree_count,
                 "Price": 0,
                 "Sales": 0,
@@ -293,12 +293,12 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
 
         # Define a dictionary to map location names to their respective data.
         location_data = {
-            "CHOPHOUSE-NOLA": ("Bread Basket", 1.33),
-            "CHOPHOUSE '47": ("Bread Basket", 1.33),
-            "GULFSTREAM CAFE": ("Bread Basket", 0.85),
-            "NEW YORK PRIME-MYRTLE BEACH": ("Bread Basket", 1.09),
-            "NEW YORK PRIME-BOCA": ("Bread Basket", 1.48),
-            "NEW YORK PRIME-ATLANTA": ("Bread Basket", 1.48),
+            "CHOPHOUSE-NOLA": ("Bread Basket per Entree", 0.35),
+            "CHOPHOUSE '47": ("Bread Basket per Entree", 0.35),
+            "GULFSTREAM CAFE": ("Bread Basket per Entree", 0.92),
+            "NEW YORK PRIME-MYRTLE BEACH": ("Bread Basket per Entree", 0.79),
+            "NEW YORK PRIME-BOCA": ("Bread Basket per Entree", 0.85),
+            "NEW YORK PRIME-ATLANTA": ("Bread Basket per Entree", 0.83),
         }
 
         # Check if the location exists in the dictionary, then add the new row.
@@ -332,9 +332,10 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
         )
         df_menu = removeSpecial(df_pmix)
 
+        # print df_menu where df_menu["cat2"] is nan
         cat2_list = df_menu["Cat2"]
         cat2_list = removedups(cat2_list)
-        df_menu["Cost"].fillna(0, inplace=True)
+        df_menu["cost"] = df_menu["Cost"].fillna(0)
         df_menu["Cost %"] = df_menu.apply(
             lambda row: row.Cost / row.Price if row.Price else 0, axis=1
         )
@@ -359,9 +360,21 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
             ]
         )
         df_menu = df_pmix
-        df_none = df_menu.drop(df_menu[df_menu.Cat2 != "None"].index)
+        # select all rows where cat2 is nan
+        df_none = df_menu[df_menu["Cat2"].isnull()]
+        # Fill NaN values in specific columns with "None"
+        columns_to_fill_none = ["Cat1", "Cat2", "Cat3"]
+        df_none.loc[:, columns_to_fill_none] = (
+            df_none.loc[:, columns_to_fill_none].fillna("None").astype(str)
+        )
+        # Fill NaN values in all other columns with 0
+        df_none = df_none.fillna(0)
+
         if not df_none.empty:
             df_nonetab = pd.concat([df_nonetab, df_none])
+
+        # drop nan from cat2_list
+        cat2_list = [x for x in cat2_list if str(x) != "nan"]
 
         with pd.ExcelWriter(f"{directory}/{store}.xlsx") as writer:  # pylint: disable=abstract-class-instantiated
             for cat in cat2_list:
@@ -392,6 +405,8 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
     #     file_path = os.path.join(directory, file)
     #     format_excel(file_path)
 
+    if df_nonetab.empty:
+        print("No items to add")
     df_nonetab = df_nonetab.groupby(["MenuItem"]).sum(numeric_only=True)
     df_nonetab.sort_values(by=sort_unit, inplace=True, ascending=False)
     print(df_nonetab.head(25))
