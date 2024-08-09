@@ -54,6 +54,8 @@ def make_dataframe1(catg, menu_analysis):
 def menucatagory(catg, df_menu):
     """Create a separate dataframe for each menu category"""
     df = df_menu.drop(df_menu[df_menu.Cat2 != catg].index)
+    if df.empty:
+        print(f"{catg} is empty")
     return df
 
 
@@ -190,15 +192,9 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
     menu_analysis.loc[:, "Location"] = menu_analysis["Location"].str.replace(
         r"CHOPHOUSE\ -\ NOLA", "CHOPHOUSE-NOLA", regex=True
     )
-    #    menu_analysis.loc[:, "MenuItemName"] = menu_analysis["MenuItemName"].str.replace(
-    #        r"CHOPHOUSE\ -\ NOLA", "CHOPHOUSE-NOLA", regex=True
-    #    )
     menu_analysis.loc[:, "Location"] = menu_analysis["Location"].str.replace(
         r"CAFÉ", "CAFE", regex=True
     )
-    #    menu_analysis.loc[:, "MenuItemName"] = menu_analysis["MenuItemName"].str.replace(
-    #        r"CAFÉ", "CAFE", regex=True
-    #    )
     menu_analysis.loc[:, "Location"] = menu_analysis["Location"].str.replace(
         r"^(?:.*?( -)){2}", "-", regex=True
     )
@@ -332,9 +328,10 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
         )
         df_menu = removeSpecial(df_pmix)
 
-        # print df_menu where df_menu["cat2"] is nan
         cat2_list = df_menu["Cat2"]
         cat2_list = removedups(cat2_list)
+        # if "nan" in cat2_list replace it with "None"
+        cat2_list = [x if str(x) != "nan" else "None" for x in cat2_list]
         df_menu["cost"] = df_menu["Cost"].fillna(0)
         df_menu["Cost %"] = df_menu.apply(
             lambda row: row.Cost / row.Price if row.Price else 0, axis=1
@@ -362,19 +359,20 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
         df_menu = df_pmix
         # select all rows where cat2 is nan
         df_none = df_menu[df_menu["Cat2"].isnull()]
-        # Fill NaN values in specific columns with "None"
-        columns_to_fill_none = ["Cat1", "Cat2", "Cat3"]
-        df_none.loc[:, columns_to_fill_none] = (
-            df_none.loc[:, columns_to_fill_none].fillna("None").astype(str)
-        )
-        # Fill NaN values in all other columns with 0
-        df_none = df_none.fillna(0)
+        # Fill NaN values in menu["cat2"] with "None"
+        df_menu["Cat2"] = df_menu["Cat2"].fillna("None")
+        # columns_to_fill_none = ["Cat1", "Cat2", "Cat3"]
+        # df_none.loc[:, columns_to_fill_none] = (
+        #     df_none.loc[:, columns_to_fill_none].fillna("None").astype(str)
+        # )
+        # # # Fill NaN values in all other columns with 0
+        # df_none = df_none.fillna(0)
 
         if not df_none.empty:
             df_nonetab = pd.concat([df_nonetab, df_none])
 
         # drop nan from cat2_list
-        cat2_list = [x for x in cat2_list if str(x) != "nan"]
+        # cat2_list = [x for x in cat2_list if str(x) != "nan"]
 
         with pd.ExcelWriter(f"{directory}/{store}.xlsx") as writer:  # pylint: disable=abstract-class-instantiated
             for cat in cat2_list:
