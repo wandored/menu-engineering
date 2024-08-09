@@ -2,10 +2,12 @@
 Import sales mix and export menu engineering report to excel
 """
 
+import numpy as np
 import pandas as pd
 import psycopg2
 from config import Config
 from psycopg2.errors import UniqueViolation, IntegrityError
+from psycopg2 import sql
 from sqlalchemy import create_engine
 
 
@@ -16,10 +18,10 @@ def removedups(x):
 
 def engineer(df):
     """Assigns bool if less than mean for Quantity and Margin"""
-    qtm = df["Qty"].mean()
-    df["qty_mn"] = np.where(df.Qty < qtm, False, True)
-    mrgn = df["Margin"].mean()
-    df["mrg_mn"] = np.where(df.Margin < mrgn, False, True)
+    qtm = df["quantity"].mean()
+    df["qty_mn"] = np.where(df.quantity < qtm, False, True)
+    mrgn = df["margin"].mean()
+    df["mrg_mn"] = np.where(df.margin < mrgn, False, True)
     return df
 
 
@@ -134,47 +136,85 @@ def add_new_row(location, menu_item, cost, df):
     return pd.concat([df, new_row], ignore_index=True)
 
 
-def format_excel(file_path):
-    wb = openpyxl.load_workbook(file_path)
+def calculate_bread_basket(df):
+    stores_w_bread = (4, 9, 11, 15, 16, 17)
+    df_bread = df[(df["store_id"].isin(stores_w_bread)) & (df["category2"] == "Entree")]
+    for store in stores_w_bread:
+        bread_str = "Bread Basket"
+        try:
+            # TODO this is always empty
+            matching_rows = df_bread.loc[
+                (df_bread["store_id"] == store)
+                & (df_bread["menu_item"].str.contains(bread_str, regex=True)),
+                "menu_cost",
+            ]
+            if not matching_rows.empty:
+                bb_cost = matching_rows.iloc[0]
+            elif store == 4:
+                bb_cost = 0.19
+            elif store == 9:
+                bb_cost = 0.19
+            elif store == 11:
+                bb_cost = 0.84
+            elif store == 15:
+                bb_cost = 0.96
+            elif store == 16:
+                bb_cost = 0.69
+            elif store == 17:
+                bb_cost = 0.84
 
-    for sheet_name in wb.sheetnames:
-        sheet = wb[sheet_name]
+            entree_count = df_bread.loc[df_bread["store_id"] == store, "quantity"].sum()
+            print(f"Entree count for {store}: {entree_count}")
+            new_row = {
+                "store_id": store,
+                "menu_item": "Bread Basket per Entree",
+                "quantity": entree_count,
+                "menu_price": 0,
+                "menu_cost": bb_cost,
+                "sales": 0,
+                "category1": "Food",
+                "category2": "No Charge",
+                "category3": "None",
+            }
+            df = pd.concat([df, pd.DataFrame(new_row, index=[0])], ignore_index=True)
+        except Exception as e:
+            print(e)
+            pass
 
-        if "currency" not in wb.named_styles:
-            currency_style = NamedStyle(name="currency", number_format="#,##0.00")
-            for col in ["C", "D", "E", "F", "G", "H", "I"]:
-                for cell in sheet[col]:
-                    cell.style = currency_style
+    return df
 
-            for cell in sheet["F"]:
-                cell.number_format = "0.0%"
+# def format_excel(file_path):
+#     wb = openpyxl.load_workbook(file_path)
 
-            for col in sheet.columns:
-                max_length = 0
-                column = col[0].column_letter
-                for cell in col:
-                    try:
-                        if len(str(cell.value)) > max_length:
-                            max_length = len(cell.value)
-                    except Exception as e:
-                        print(repr(e))
-                        pass
-                adjusted_width = (max_length + 2) * 1.2
-                sheet.column_dimensions[column].width = adjusted_width
+#     for sheet_name in wb.sheetnames:
+#         sheet = wb[sheet_name]
 
-    wb.save(file_path)
+#         if "currency" not in wb.named_styles:
+#             currency_style = NamedStyle(name="currency", number_format="#,##0.00")
+#             for col in ["C", "D", "E", "F", "G", "H", "I"]:
+#                 for cell in sheet[col]:
+#                     cell.style = currency_style
+
+#             for cell in sheet["F"]:
+#                 cell.number_format = "0.0%"
+
+#             for col in sheet.columns:
+#                 max_length = 0
+#                 column = col[0].column_letter
+#                 for cell in col:
+#                     try:
+#                         if len(str(cell.value)) > max_length:
+#                             max_length = len(cell.value)
+#                     except Exception as e:
+#                         print(repr(e))
+#                         pass
+#                 adjusted_width = (max_length + 2) * 1.2
+#                 sheet.column_dimensions[column].width = adjusted_width
+
+#     wb.save(file_path)
 
 
-def update_location_names(df):
-    engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
-    conn = psycopg2.connect(
-        host=Config.HOST_SERVER,
-        database=Config.PSYCOPG2_DATABASE,
-        user=Config.PSYCOPG2_USER,
-        password=Config.PSYCOPG2_PASS,
-    )
-    cur = conn.cursor()
-
+def update_location_names(df, engine, conn, cur):
     # import locationid and name from location table
     cur.execute("SELECT locationid, name FROM location")
     location = cur.fetchall()
@@ -216,7 +256,7 @@ def merge_dataframes(df1, df2):
     return df
 
 
-def main(product_mix_csv, menu_analysis_csv, year, period, week):
+def main(product_mix_csv, menu_analysis_csv, year, period, week, engine, conn, cur):
     product_mix = pd.read_csv(
         product_mix_csv,
         skiprows=3,
@@ -269,22 +309,24 @@ def main(product_mix_csv, menu_analysis_csv, year, period, week):
     )
     menu_analysis["menu_cost"] = menu_analysis["menu_cost"].fillna(0)
     df_merge = merge_dataframes(product_mix, menu_analysis)
-    menu_engineering = update_location_names(df_merge)
+    menu_engineering = update_location_names(df_merge, engine, conn, cur)
+    menu_engineering = calculate_bread_basket(menu_engineering)
+    print(menu_engineering)
 
     # Calculate Bread Basket usage for stores with bread
     # TODO change to store_id
-    stores_w_bread = [
-        "NEW YORK PRIME-MYRTLE BEACH",
-        "NEW YORK PRIME-BOCA",
-        "NEW YORK PRIME-ATLANTA",
-        "CHOPHOUSE-NOLA",
-        "CHOPHOUSE '47",
-        "GULFSTREAM CAFE",
-    ]
-    entree_count = menu_engineering.loc[
-        menu_engineering["category2"] == "Entree", "quantity"
-    ].sum()
-    print(f"Entree count: {entree_count}")
+    # stores_w_bread = [
+    #     "NEW YORK PRIME-MYRTLE BEACH",
+    #     "NEW YORK PRIME-BOCA",
+    #     "NEW YORK PRIME-ATLANTA",
+    #     "CHOPHOUSE-NOLA",
+    #     "CHOPHOUSE '47",
+    #     "GULFSTREAM CAFE",
+    # ]
+    # entree_count = menu_engineering.loc[
+    #     menu_engineering["category2"] == "Entree", "quantity"
+    # ].sum()
+    # print(f"Entree count: {entree_count}")
     # if menu_engineering['location'] in stores_w_bread:
     # # add bread basket to df_menu
     # new_row = {
@@ -361,8 +403,61 @@ def main(product_mix_csv, menu_analysis_csv, year, period, week):
             "category3",
         ]
     )
-    print(menu_engineering.head(25))
-    print(menu_engineering.tail(25))
+    # menu_engineering = engineer(menu_engineering)
+    # menu_engineering["rating"] = menu_engineering.apply(rating, axis=1)
+
+    return
+
+    table_name = "menu_engineering"
+    temp_table_name = f"temp_{table_name}"
+    try:
+        menu_engineering.to_sql(
+            temp_table_name,
+            engine,
+            if_exists="replace",
+            index=False,
+            method="multi",
+            chunksize=1000,
+        )
+        update_query = sql.SQL(
+            """
+                INSERT INTO {table} (location, store_id, year, period, week, concept, menu_item, quantity, menu_price, menu_cost, margin, cost_pct, sales, total_cost, profit, category1, category2, category3)
+                SELECT t.location, t.store_id::integer, t.year::integer, t.period::integer, t.week::integer, t.concept, t.menu_item, t.quantity, t.menu_price, t.menu_cost, t.margin, t.cost_pct, t.sales, t.total_cost, t.profit, t.category1, t.category2, t.category3
+                FROM {temp_table} AS t
+                ON CONFLICT (location, store_id, year, period, week, concept, menu_item) DO UPDATE
+                SET quantity = EXCLUDED.quantity,
+                menu_price = EXCLUDED.menu_price,
+                menu_cost = EXCLUDED.menu_cost,
+                margin = EXCLUDED.margin,
+                cost_pct = EXCLUDED.cost_pct,
+                sales = EXCLUDED.sales,
+                total_cost = EXCLUDED.total_cost,
+                profit = EXCLUDED.profit,
+                category1 = EXCLUDED.category1,
+                category2 = EXCLUDED.category2,
+                category3 = EXCLUDED.category3
+                """
+        ).format(
+            table=sql.Identifier(table_name),
+            temp_table=sql.Identifier(temp_table_name),
+        )
+        cur.execute(update_query)
+        conn.commit()
+    except (IntegrityError, UniqueViolation) as e:
+        print(e)
+        return 1
+    except Exception as e:
+        print(e)
+        return 1
+    finally:
+        try:
+            cur.execute(f"DROP TABLE IF EXISTS {temp_table_name}")
+            conn.commit()
+        except Exception as e:
+            print(e)
+            conn.rollback()
+    return 0
+
     # menu_engineering = df_pmix
     # # select all rows where cat2 is nan
     # df_none = menu_engineering[menu_engineering["Cat2"].isnull()]
@@ -424,19 +519,28 @@ def main(product_mix_csv, menu_analysis_csv, year, period, week):
 
 
 if __name__ == "__main__":
+    engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
+    conn = psycopg2.connect(
+        host=Config.HOST_SERVER,
+        database=Config.PSYCOPG2_DATABASE,
+        user=Config.PSYCOPG2_USER,
+        password=Config.PSYCOPG2_PASS,
+    )
+    cur = conn.cursor()
+
     # user input year, period and week
-    # year = input("Enter year: ")
-    # period = input("Enter period: ")
-    # week = input("Enter week: ")
-    year = 2024
-    period = 8
-    week = 4
+    year: int = input("Enter year: ")
+    period: int = input("Enter period: ")
+    week: int = input("Enter week: ")
+    # year = 2024
+    # period = 8
+    # week = 4
 
     print(f"Year: {year}, Period: {period}, Week: {week}")
 
     product_mix = "./downloads/Product Mix.csv"
     menu_price_analysis = "./downloads/Menu Price Analysis.csv"
-    main(product_mix, menu_price_analysis, year, period, week)
+    main(product_mix, menu_price_analysis, year, period, week, engine, conn, cur)
 
     # os.system(
     #     "cp /home/wandored/Projects/menu-engineering/output/*.xlsx /home/wandored/Dropbox/Restaurant365/Report_Data"
