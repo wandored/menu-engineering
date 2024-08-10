@@ -140,16 +140,17 @@ def calculate_bread_basket(df):
     stores_w_bread = (4, 9, 11, 15, 16, 17)
     df_bread = df[(df["store_id"].isin(stores_w_bread)) & (df["category2"] == "Entree")]
     for store in stores_w_bread:
-        bread_str = "Bread Basket"
+        cur.execute("SELECT name FROM restaurants WHERE id = %s", (store,))
+        store_name = cur.fetchone()[0]
+        bread_str = r"Bread.*Basket"
         try:
-            # TODO this is always empty
-            matching_rows = df_bread.loc[
-                (df_bread["store_id"] == store)
-                & (df_bread["menu_item"].str.contains(bread_str, regex=True)),
-                "menu_cost",
-            ]
+            cur.execute(
+                "SELECT location, recipe_cost FROM recipe_cost WHERE id = %s AND menu_item ~* %s",
+                (store, bread_str),
+            )
+            matching_rows = pd.DataFrame(cur.fetchall(), columns=["location", "cost"])
             if not matching_rows.empty:
-                bb_cost = matching_rows.iloc[0]
+                bb_cost = matching_rows["cost"].iloc[0]
             elif store == 4:
                 bb_cost = 0.19
             elif store == 9:
@@ -164,9 +165,10 @@ def calculate_bread_basket(df):
                 bb_cost = 0.84
 
             entree_count = df_bread.loc[df_bread["store_id"] == store, "quantity"].sum()
-            print(f"Entree count for {store}: {entree_count}")
             new_row = {
+                "location": store_name,
                 "store_id": store,
+                "concept": "Steakhouse",
                 "menu_item": "Bread Basket per Entree",
                 "quantity": entree_count,
                 "menu_price": 0,
@@ -182,36 +184,6 @@ def calculate_bread_basket(df):
             pass
 
     return df
-
-# def format_excel(file_path):
-#     wb = openpyxl.load_workbook(file_path)
-
-#     for sheet_name in wb.sheetnames:
-#         sheet = wb[sheet_name]
-
-#         if "currency" not in wb.named_styles:
-#             currency_style = NamedStyle(name="currency", number_format="#,##0.00")
-#             for col in ["C", "D", "E", "F", "G", "H", "I"]:
-#                 for cell in sheet[col]:
-#                     cell.style = currency_style
-
-#             for cell in sheet["F"]:
-#                 cell.number_format = "0.0%"
-
-#             for col in sheet.columns:
-#                 max_length = 0
-#                 column = col[0].column_letter
-#                 for cell in col:
-#                     try:
-#                         if len(str(cell.value)) > max_length:
-#                             max_length = len(cell.value)
-#                     except Exception as e:
-#                         print(repr(e))
-#                         pass
-#                 adjusted_width = (max_length + 2) * 1.2
-#                 sheet.column_dimensions[column].width = adjusted_width
-
-#     wb.save(file_path)
 
 
 def update_location_names(df, engine, conn, cur):
@@ -311,60 +283,7 @@ def main(product_mix_csv, menu_analysis_csv, year, period, week, engine, conn, c
     df_merge = merge_dataframes(product_mix, menu_analysis)
     menu_engineering = update_location_names(df_merge, engine, conn, cur)
     menu_engineering = calculate_bread_basket(menu_engineering)
-    print(menu_engineering)
 
-    # Calculate Bread Basket usage for stores with bread
-    # TODO change to store_id
-    # stores_w_bread = [
-    #     "NEW YORK PRIME-MYRTLE BEACH",
-    #     "NEW YORK PRIME-BOCA",
-    #     "NEW YORK PRIME-ATLANTA",
-    #     "CHOPHOUSE-NOLA",
-    #     "CHOPHOUSE '47",
-    #     "GULFSTREAM CAFE",
-    # ]
-    # entree_count = menu_engineering.loc[
-    #     menu_engineering["category2"] == "Entree", "quantity"
-    # ].sum()
-    # print(f"Entree count: {entree_count}")
-    # if menu_engineering['location'] in stores_w_bread:
-    # # add bread basket to df_menu
-    # new_row = {
-    #     "menu_item": "Bread Basket per Entree",
-    #     "quantity": entree_count,
-    #     "menu_price": 0,
-    #     "sales": 0,
-    #     "category1": "Food",
-    #     "category2": "No Charge",
-    #     "category3": "None",
-    # }
-    # menu_engineering = pd.concat(
-    #     [menu_engineering, pd.DataFrame(new_row, index=[0])], ignore_index=True
-    # )
-
-    # # Define a dictionary to map location names to their respective data.
-    # location_data = {
-    #     "CHOPHOUSE-NOLA": ("Bread Basket per Entree", 0.35),
-    #     "CHOPHOUSE '47": ("Bread Basket per Entree", 0.35),
-    #     "GULFSTREAM CAFE": ("Bread Basket per Entree", 0.92),
-    #     "NEW YORK PRIME-MYRTLE BEACH": ("Bread Basket per Entree", 0.79),
-    #     "NEW YORK PRIME-BOCA": ("Bread Basket per Entree", 0.85),
-    #     "NEW YORK PRIME-ATLANTA": ("Bread Basket per Entree", 0.83),
-    # }
-
-    # # Check if the location exists in the dictionary, then add the new row.
-    # if location in location_data:
-    #     menu_item, cost = location_data[location]
-    #     df_pmix = add_new_row(location, menu_item, cost, df_pmix)
-    # price_dict[key] = df_pmix
-
-    # directory = "/home/wandored/Projects/menu-engineering/output/"
-    #     df_menu = removeSpecial(df_pmix)
-
-    #     cat2_list = df_menu["Cat2"]
-    #     cat2_list = removedups(cat2_list)
-    #     # if "nan" in cat2_list replace it with "None"
-    #     cat2_list = [x if str(x) != "nan" else "None" for x in cat2_list]
     menu_engineering["period"] = period
     menu_engineering["year"] = year
     menu_engineering["week"] = week
@@ -406,7 +325,7 @@ def main(product_mix_csv, menu_analysis_csv, year, period, week, engine, conn, c
     # menu_engineering = engineer(menu_engineering)
     # menu_engineering["rating"] = menu_engineering.apply(rating, axis=1)
 
-    return
+    print(menu_engineering.info())
 
     table_name = "menu_engineering"
     temp_table_name = f"temp_{table_name}"
@@ -458,65 +377,6 @@ def main(product_mix_csv, menu_analysis_csv, year, period, week, engine, conn, c
             conn.rollback()
     return 0
 
-    # menu_engineering = df_pmix
-    # # select all rows where cat2 is nan
-    # df_none = menu_engineering[menu_engineering["Cat2"].isnull()]
-    # # Fill NaN values in menu["cat2"] with "None"
-    # menu_engineering["Cat2"] = menu_engineering["Cat2"].fillna("None")
-    # # columns_to_fill_none = ["Cat1", "Cat2", "Cat3"]
-    # # df_none.loc[:, columns_to_fill_none] = (
-    # #     df_none.loc[:, columns_to_fill_none].fillna("None").astype(str)
-    # # )
-    # # # # Fill NaN values in all other columns with 0
-    # # df_none = df_none.fillna(0)
-
-    # if not df_none.empty:
-    #     df_nonetab = pd.concat([df_nonetab, df_none])
-
-    # # drop nan from cat2_list
-    # # cat2_list = [x for x in cat2_list if str(x) != "nan"]
-
-    # with pd.ExcelWriter(f"{directory}/{store}.xlsx") as writer:  # pylint: disable=abstract-class-instantiated
-    #     for cat in cat2_list:
-    #         df = menucatagory(cat, menu_engineering)
-    #         df = engineer(df)
-    #         df["rating"] = df.apply(rating, axis=1)
-    #         df.sort_values(
-    #             by=["Profit", "Qty"],
-    #             inplace=True,
-    #             ascending=False,
-    #             ignore_index=True,
-    #         )
-    #         df.drop(columns={"Location", "Cat3", "qty_mn", "mrg_mn"}, inplace=True)
-    #         df.loc["Total"] = pd.Series(
-    #             df[["Qty", "Sales", "Total Cost", "Profit"]].sum()
-    #         )
-    #         if df.at["Total", "Sales"]:
-    #             df.at["Total", "Cost %"] = (
-    #                 df.at["Total", "Total Cost"] / df.at["Total", "Sales"]
-    #             )
-    #         else:
-    #             df.at["Total", "Cost %"] = 1
-    #         df.to_excel(writer, sheet_name=cat, index=False)
-
-    # Format excel files
-    # excel_files = [file for file in os.listdir(directory) if file.endswith(".xlsx")]
-    # for file in excel_files:
-    #     file_path = os.path.join(directory, file)
-    #     format_excel(file_path)
-
-    # if df_nonetab.empty:
-    #     print("No items to add")
-    # df_nonetab = df_nonetab.groupby(["MenuItem"]).sum(numeric_only=True)
-    # df_nonetab.sort_values(by=sort_unit, inplace=True, ascending=False)
-    # print(df_nonetab.head(25))
-    # print()
-    # print("--------------------------------------------------------------------")
-    # print(df_nonetab.info())
-    # print(df_nonetab.describe())
-
-    return
-
 
 if __name__ == "__main__":
     engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
@@ -529,10 +389,10 @@ if __name__ == "__main__":
     cur = conn.cursor()
 
     # user input year, period and week
-    year: int = input("Enter year: ")
+    # year: int = input("Enter year: ")
     period: int = input("Enter period: ")
     week: int = input("Enter week: ")
-    # year = 2024
+    year = 2024
     # period = 8
     # week = 4
 
@@ -541,7 +401,3 @@ if __name__ == "__main__":
     product_mix = "./downloads/Product Mix.csv"
     menu_price_analysis = "./downloads/Menu Price Analysis.csv"
     main(product_mix, menu_price_analysis, year, period, week, engine, conn, cur)
-
-    # os.system(
-    #     "cp /home/wandored/Projects/menu-engineering/output/*.xlsx /home/wandored/Dropbox/Restaurant365/Report_Data"
-    # )
