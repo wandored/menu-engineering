@@ -2,138 +2,32 @@
 Import sales mix and export menu engineering report to excel
 """
 
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
 import psycopg2
-from config import Config
-from psycopg2.errors import UniqueViolation, IntegrityError
 from psycopg2 import sql
+from psycopg2.errors import IntegrityError, UniqueViolation
 from sqlalchemy import create_engine
 
-
-def removedups(x):
-    """Turn the list into a dict then back to a list to remove duplicates"""
-    return list(dict.fromkeys(x))
+from config import Config
 
 
-def engineer(df):
-    """Assigns bool if less than mean for Quantity and Margin"""
-    qtm = df["quantity"].mean()
-    df["qty_mn"] = np.where(df.quantity < qtm, False, True)
-    mrgn = df["margin"].mean()
-    df["mrg_mn"] = np.where(df.margin < mrgn, False, True)
-    return df
+def get_date(product_mix_csv):
+    with open(product_mix_csv, "r") as f:
+        next(f)
+        second_line = next(f)
+        date_string = second_line.split(" - ")[1].strip()
+        date = datetime.strptime(date_string, "%m/%d/%Y").date()
+    return date
 
 
-def rating(df):
-    """Assigns rating to each menu item"""
-    if df["qty_mn"] is True:
-        if df["mrg_mn"] is True:
-            return "Star"
-        else:
-            return "Opportunity"
-    if df["qty_mn"] is False:
-        if df["mrg_mn"] is True:
-            return "Puzzle"
-        else:
-            return "Dog"
-
-
-def make_dataframe(catg, product_mix):
-    """Separates each store into it's own dataframe"""
-    df = product_mix.drop(product_mix[product_mix.Textbox27 != catg].index)
-    return df
-
-
-def make_dataframe1(catg, menu_analysis):
-    """Separates each store into it's own dataframe"""
-    df = menu_analysis.drop(menu_analysis[menu_analysis.Location != catg].index)
-    return df
-
-
-def menucatagory(catg, df_menu):
-    """Create a separate dataframe for each menu category"""
-    df = df_menu.drop(df_menu[df_menu.Cat2 != catg].index)
-    if df.empty:
-        print(f"{catg} is empty")
-    return df
-
-
-def removeSpecial(df):
-    """Removes specialty items from the dataframes"""
-    with open("./specialty.txt") as file:
-        specialty_patterns = file.read().split("\n")
-
-    for pattern in specialty_patterns:
-        df = df.drop(df[df.MenuItem == pattern].index)
-
-    # with open("./regex_list.txt") as file:
-    #     regex_patterns = file.read().split("\n")
-
-    # Print the regex patterns and the number of rows in df
-    #    print("Regex patterns:", regex_patterns)
-    #    print("Number of rows in df:", len(df))
-    #    pause = input("Press enter to continue")
-
-    #    for pattern in regex_patterns:
-    #        print("current pattern:", pattern)
-    #        df = df.drop(df[df.MenuItem.str.contains(f'{pattern}', na=False, regex=True)].index)
-    #        print("Number of matched rows:", len(df[df.MenuItem.str.contains(f'{pattern}', na=False, regex=True)]))
-
-    df = df.drop(df[df.MenuItem.str.contains(r"^No ", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r" Only$", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r"^& ", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r"^Seat ", na=False, regex=True)].index)
-    df = df.drop(df[df.MenuItem.str.contains(r"Allergy$", na=False, regex=True)].index)
-    df = df.drop(
-        df[df.MenuItem.str.contains(r"for Salad.*", na=False, regex=True)].index
-    )
-    df = df.drop(
-        df[df.MenuItem.str.contains(r".*for Steak.*", na=False, regex=True)].index
-    )
-    df = df.drop(
-        df[df.MenuItem.str.contains(r".*for Sand.*", na=False, regex=True)].index
-    )
-    df = df.drop(
-        df[df.MenuItem.str.contains(r".*for Taco.*", na=False, regex=True)].index
-    )
-    df = df.drop(
-        df[df.MenuItem.str.contains(r".*for Cali-Club.*", na=False, regex=True)].index
-    )
-    df = df.drop(
-        df[df.MenuItem.str.contains(r".*for Edge.*", na=False, regex=True)].index
-    )
-    df = df.drop(
-        df[df.MenuItem.str.contains(r".*See Server.*", na=False, regex=True)].index
-    )
-    df = df.drop(
-        df[df.MenuItem.str.contains(r".*Refund.*", na=False, regex=True)].index
-    )
-    df = df.drop(
-        df[df.MenuItem.str.contains(r".*2 Pens.*", na=False, regex=True)].index
-    )
-    df = df.drop(
-        df[df.MenuItem.str.contains(r".*Anniversary.*", na=False, regex=True)].index
-    )
-    df = df.drop(
-        df[df.MenuItem.str.contains(r".*Birthday.*", na=False, regex=True)].index
-    )
-    df = df.drop(df[df.MenuItem.str.contains(r".*Rare.*", na=False, regex=True)].index)
-    df = df.drop(
-        df[df.MenuItem.str.contains(r".*Medium.*", na=False, regex=True)].index
-    )
-    df = df.drop(df[df.MenuItem.str.contains(r".*Well.*", na=False, regex=True)].index)
-
-    return df
-
-
-# used for adding bread basket to menu engineering
-def add_new_row(location, menu_item, cost, df):
-    new_row = pd.DataFrame(
-        {"Location": location, "MenuItem": menu_item, "Cost": cost},
-        index=[0],
-    )
-    return pd.concat([df, new_row], ignore_index=True)
+def get_period(date, cur):
+    cur.execute("SELECT period, year FROM calendar WHERE date = %s", (date,))
+    result = cur.fetchone()
+    period, year = result[0], result[1]
+    return period, year
 
 
 def calculate_bread_basket(df):
@@ -228,7 +122,7 @@ def merge_dataframes(df1, df2):
     return df
 
 
-def main(product_mix_csv, menu_analysis_csv, year, period, week, engine, conn, cur):
+def main(product_mix_csv, menu_analysis_csv, date, year, period, engine, conn, cur):
     product_mix = pd.read_csv(
         product_mix_csv,
         skiprows=3,
@@ -284,9 +178,9 @@ def main(product_mix_csv, menu_analysis_csv, year, period, week, engine, conn, c
     menu_engineering = update_location_names(df_merge, engine, conn, cur)
     menu_engineering = calculate_bread_basket(menu_engineering)
 
+    menu_engineering["date"] = date
     menu_engineering["period"] = period
     menu_engineering["year"] = year
-    menu_engineering["week"] = week
     menu_engineering["menu_cost"] = menu_engineering["menu_cost"].fillna(0)
     menu_engineering["cost_pct"] = menu_engineering.apply(
         lambda row: row.menu_cost / row.menu_price if row.menu_price else 0, axis=1
@@ -304,9 +198,9 @@ def main(product_mix_csv, menu_analysis_csv, year, period, week, engine, conn, c
         columns=[
             "location",
             "store_id",
+            "date",
             "year",
             "period",
-            "week",
             "concept",
             "menu_item",
             "quantity",
@@ -324,8 +218,9 @@ def main(product_mix_csv, menu_analysis_csv, year, period, week, engine, conn, c
     )
     # menu_engineering = engineer(menu_engineering)
     # menu_engineering["rating"] = menu_engineering.apply(rating, axis=1)
-
-    print(menu_engineering.info())
+    # print all rows with null values
+    print(menu_engineering[menu_engineering.isnull().any(axis=1)].head(50))
+    menu_engineering = menu_engineering.dropna()
 
     table_name = "menu_engineering"
     temp_table_name = f"temp_{table_name}"
@@ -340,11 +235,14 @@ def main(product_mix_csv, menu_analysis_csv, year, period, week, engine, conn, c
         )
         update_query = sql.SQL(
             """
-                INSERT INTO {table} (location, store_id, year, period, week, concept, menu_item, quantity, menu_price, menu_cost, margin, cost_pct, sales, total_cost, profit, category1, category2, category3)
-                SELECT t.location, t.store_id::integer, t.year::integer, t.period::integer, t.week::integer, t.concept, t.menu_item, t.quantity, t.menu_price, t.menu_cost, t.margin, t.cost_pct, t.sales, t.total_cost, t.profit, t.category1, t.category2, t.category3
+                INSERT INTO {table} (location, store_id, date, year, period, concept, menu_item, quantity, menu_price, menu_cost, margin, cost_pct, sales, total_cost, profit, category1, category2, category3)
+                SELECT t.location, t.store_id::integer, t.date, t.year::integer, t.period::integer, t.concept, t.menu_item, t.quantity, t.menu_price, t.menu_cost, t.margin, t.cost_pct, t.sales, t.total_cost, t.profit, t.category1, t.category2, t.category3
                 FROM {temp_table} AS t
-                ON CONFLICT (location, store_id, year, period, week, concept, menu_item) DO UPDATE
-                SET quantity = EXCLUDED.quantity,
+                ON CONFLICT (location, store_id, date, Menu_item) DO UPDATE
+                SET year = EXCLUDED.year,
+                period = EXCLUDED.period,
+                concept = EXCLUDED.concept,
+                quantity = EXCLUDED.quantity,
                 menu_price = EXCLUDED.menu_price,
                 menu_cost = EXCLUDED.menu_cost,
                 margin = EXCLUDED.margin,
@@ -390,14 +288,16 @@ if __name__ == "__main__":
 
     # user input year, period and week
     # year: int = input("Enter year: ")
-    period: int = input("Enter period: ")
-    week: int = input("Enter week: ")
-    year = 2024
-    # period = 8
+    # period: int = input("Enter period: ")
+    # year = 2024
+    # # period = 8
     # week = 4
 
-    print(f"Year: {year}, Period: {period}, Week: {week}")
+    # print(f"Year: {year}, Period: {period}")
 
     product_mix = "./downloads/Product Mix.csv"
     menu_price_analysis = "./downloads/Menu Price Analysis.csv"
-    main(product_mix, menu_price_analysis, year, period, week, engine, conn, cur)
+    date = get_date(product_mix)
+    period, year = get_period(date, cur)
+    print(f"Date: {date}, Period: {period}, Year: {year}")
+    main(product_mix, menu_price_analysis, date, year, period, engine, conn, cur)
