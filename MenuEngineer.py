@@ -361,18 +361,18 @@ def main(product_mix_csv, menu_analysis_csv, sort_unit):
         df_none = df_menu[df_menu["Cat2"].isnull()]
         # Fill NaN values in menu["cat2"] with "None"
         df_menu["Cat2"] = df_menu["Cat2"].fillna("None")
-        # columns_to_fill_none = ["Cat1", "Cat2", "Cat3"]
-        # df_none.loc[:, columns_to_fill_none] = (
-        #     df_none.loc[:, columns_to_fill_none].fillna("None").astype(str)
-        # )
+        columns_to_fill_none = ["Cat1", "Cat2", "Cat3"]
+        df_none.loc[:, columns_to_fill_none] = (
+            df_none.loc[:, columns_to_fill_none].fillna("None").astype(str)
+        )
         # # # Fill NaN values in all other columns with 0
-        # df_none = df_none.fillna(0)
+        df_none = df_none.fillna(0)
 
         if not df_none.empty:
             df_nonetab = pd.concat([df_nonetab, df_none])
 
         # drop nan from cat2_list
-        # cat2_list = [x for x in cat2_list if str(x) != "nan"]
+        cat2_list = [x for x in cat2_list if str(x) != "nan"]
 
         with pd.ExcelWriter(f"{directory}/{store}.xlsx") as writer:  # pylint: disable=abstract-class-instantiated
             for cat in cat2_list:
@@ -432,7 +432,7 @@ if __name__ == "__main__":
     elif args.quantity:
         sort_unit = "Qty"
     else:
-        print("No sort unit provided, sort will be by Profit Margin")
+        print("No sort unit provided, sort will be by Price Margin")
         sort_unit = "Profit"
 
     product_mix = "./downloads/Product Mix.csv"
