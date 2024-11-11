@@ -13,7 +13,7 @@ import pandas as pd
 def main():
     # read in the two csv files
     menu_item_export = pd.read_csv(
-        "./downloads/top_items/MenuItem_Export.csv",
+        "./downloads/MenuItem_Export.csv",
         usecols=["Name", "Created Date", "Archived"],
         encoding="ISO-8859-1",
     )
@@ -28,7 +28,7 @@ def main():
     )
 
     r365_menu_items = pd.read_csv(
-        "./downloads/top_items/menu_items_export_r365.csv",
+        "./downloads/menu_items_export_r365.csv",
         usecols=["Name", "Category1", "Category2", "Category3"],
         encoding="ISO-8859-1",
     )
