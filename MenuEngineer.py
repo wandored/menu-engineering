@@ -428,12 +428,12 @@ if __name__ == "__main__":
 
     # must have a sort unit
     if args.profit:
-        sort_unit = "Profit"
+        sort_unit = "Sales"
     elif args.quantity:
         sort_unit = "Qty"
     else:
         print("No sort unit provided, sort will be by Price Margin")
-        sort_unit = "Profit"
+        sort_unit = "Sales"
 
     product_mix = "./downloads/Product Mix.csv"
     menu_price_analysis = "./downloads/Menu Price Analysis.csv"
