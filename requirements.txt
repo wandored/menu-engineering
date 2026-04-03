@@ -24,7 +24,7 @@ pandas==2.2.2
     # via -r requirements.in
 psycopg2==2.9.9
     # via -r requirements.in
-pygments==2.18.0
+pygments==2.20.0
     # via icecream
 python-dateutil==2.9.0.post0
     # via pandas
